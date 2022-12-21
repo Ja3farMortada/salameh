@@ -1,0 +1,55 @@
+{
+    "name": "salameh",
+    "version": "1.0.0",
+    "description": "Salameh Cell",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dist": "electron-builder --x64",
+        "publish": "electron-builder --x64 -p always"
+    },
+    "build": {
+        "appId": "com.binariez.Ja3farMortada.salameh",
+        "productName": "Salameh Cell app",
+        "target": "NSIS",
+        "publish": [
+            {
+                "provider": "github",
+                "owner": "Ja3farMortada",
+                "repo": "salameh"
+            }
+        ],
+        "extraResources": [
+            "./server",
+            "keys.json"
+        ],
+        "npmRebuild": "false"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Ja3farMortada/salameh.git"
+    },
+    "author": "Binariez LLC",
+    "license": "ISC",
+    "devDependencies": {
+        "electron": "^22.0.0",
+        "electron-builder": "^23.6.0"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.2.1",
+        "@sweetalert2/themes": "^5.0.15",
+        "angular": "^1.8.3",
+        "angular-route": "^1.8.3",
+        "angular-utils-pagination": "^0.11.1",
+        "bootstrap": "^5.2.3",
+        "chart.js": "^4.1.0",
+        "electron-log": "^4.4.8",
+        "electron-updater": "^5.3.0",
+        "exceljs": "^4.3.0",
+        "jquery": "^3.6.0",
+        "jquery-ui": "^1.13.2",
+        "moment": "^2.29.4",
+        "ng-file-upload": "^12.2.13",
+        "sweetalert2": "^11.4.26"
+    }
+}

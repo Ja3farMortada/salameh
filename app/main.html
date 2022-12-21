@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salameh Cell</title>
+
+    <!-- Load Stylesheets CSS -->
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/jquery-ui/themes/base/theme.css">
+    <link rel="stylesheet" href="../node_modules/jquery-ui/themes/base/datepicker.css">
+    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../node_modules/@sweetalert2/themes/dark/dark.min.css">
+
+    <!-- JS Frameworks -->
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/jquery-ui/dist/jquery-ui.min.js"></script>
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/angular-route/angular-route.min.js"></script>
+    <script src="../node_modules/angular-utils-pagination/dirPagination.js"></script>
+    <script src="../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+    <script src="../node_modules/moment/moment.js"></script>
+    <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
+    <script src="../node_modules/ng-file-upload/dist/ng-file-upload.min.js"></script>
+
+    <!-- Load Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Load Main Controller -->
+    <script src="mainController.js"></script>
+
+    <!-- Load Services -->
+    <script src="_services/notificationService.js"></script>
+    <script src="_services/dateService.js"></script>
+</head>
+
+<body ng-app="mainApp" ng-controller="mainController" style="background-color: #F0F5FB;">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand"><i class="fas fa-circle-radiation fa-lg"></i></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!/services"><i class="fas fa-money-check"></i> Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!/stock"><i class="fas fa-boxes"></i> Stock</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!/history"><i class="fas fa-history"></i> History</a>
+                    </li>
+                    <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                        <a class="nav-link" href="#!/customers"><i class="fas fa-users"></i> Customers</a>
+                    </li>
+                    <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                        <a class="nav-link" href="#!/debts"><i class="fas fa-users"></i> Debts</a>
+                    </li>
+                    <li class="nav-item" ng-if="loggedInUser.canViewPayments === 1">
+                        <a class="nav-link" href="#!/payments"><i class="fas fa-money-bill-wave"></i> Payments</a>
+                    </li>
+                    <li class="nav-item" ng-if="loggedInUser.type === 'admin'">
+                        <a class="nav-link" href="#!/reports"><i class="fas fa-chart-line fa-fw"></i> Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!/reminders"><i class="fas fa-stopwatch"></i> Reminders <span
+                                class="badge badge-pill badge-danger"
+                                ng-if="remindersCount.length > 0">{{remindersCount.length}}</span></a>
+                    </li>
+
+                </ul>
+
+                <ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown"><i class="fas fa-user-alt"></i>
+                            admin
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#!/settings"><i class="fas fa-cog fa-lg"></i>
+                                Settings</a></li>
+                            <li><a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target="#aboutModal"><i
+                                        class="fas fa-info-circle fa-lg fa-fw"></i> About</a></li>
+                            <li><a class="dropdown-item" href="" ng-click="openUpdateModal()"><i
+                                        class="fas fa-sync-alt fa-lg fa-fw"></i> Check For Updates</a></li>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="" ng-click="logout()"><i
+                                    class="fas fa-sign-out-alt fa-lg"></i>
+                                Logout</a>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div>
+        <div ng-view>
+            <!-- here where the pages load their contents -->
+        </div>
+    </div>
+</body>
+
+<!-- Load Controllers -->
+<script src="controller/servicesController.js"></script>
+<script src="controller/stockController.js"></script>
+<script src="controller/settingsController.js"></script>
+
+<!-- Load Models -->
+<script src="model/servicesFactory.js"></script>
+<script src="model/stockFactory.js"></script>
+<script src="model/settingsFactory.js"></script>
+
+<!-- Load Directives -->
+<script src="_directives/js/accountSettings.js"></script>
+<script src="_directives/js/generalSettings.js"></script>
+<script src="_directives/js/stockSettings.js"></script>
+<script src="_directives/js/servicesSettings.js"></script>
+<script src="_directives/js/customersSettings.js"></script>
+
+<!-- Load Directive's Models -->
+<script src="_directives/models/accountFactory.js"></script>
+<script src="_directives/models/generalFactory.js"></script>
+<script src="_directives/models/stockModel.js"></script>
+<script src="_directives/models/customersFactory.js"></script>
+
+</html>

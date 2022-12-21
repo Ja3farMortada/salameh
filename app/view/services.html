@@ -1,0 +1,111 @@
+<div class="container">
+    <ul class="nav nav-tabs nav-fill">
+        <li class="nav-item text-center">
+            <a class="nav-link text-secondary text-uppercase"
+                ng-class="{'active': tabSelected === 0, 'active-tab-dir': tabSelected === 0}"
+                ng-click="selectService(0)"><img src="assets/images/touch.png" style="width:32px; height:32px;">
+                touch</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary text-uppercase"
+                ng-class="{'active': tabSelected === 1, 'active-tab-dir': tabSelected === 1}"
+                ng-click="selectService(1)"><img src="assets/images/alfa.jpg" style="width:32px; height:32px;"> alfa</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary text-uppercase"
+                ng-class="{'active': tabSelected === 2, 'active-tab-dir': tabSelected === 2}"
+                ng-click="selectService(2)"><img src="assets/images/internet2.png" style="width:32px; height:32px;">
+                internet</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-secondary text-uppercase"
+                ng-class="{'active': tabSelected === 3, 'active-tab-dir': tabSelected === 3}"
+                ng-click="selectService(3)"><img src="assets/images/steam.jpg" style="width:32px; height:32px;">
+                vouchers</a>
+        </li>
+    </ul>
+</div>
+
+<br>
+
+<div class="container-fluid row">
+    <div class="col-4">
+        <div class="card services-card">
+            <ul class="nav nav-tabs nav-fill">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Prepaid</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Validity</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Bill</a>
+                </li>
+            </ul>
+            <div class="card-body mt-3">
+                <div class="row">
+                    <div class="col-3 text-center" ng-repeat="data in services">
+                        <img class="service-image" ng-src="http://localhost:3000{{data.image_url}}" alt="{{ data.service_description }}">
+                        <p>{{data.service_name}}</p>
+                    </div>
+                    <!-- <div class="col-3 text-center">
+                        <img src="assets/images/services/167.png" style="height: 60px; border-radius: 5px;">
+                        <p>$1.67</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/379.png" style="height: 60px; border-radius: 5px;">
+                        <p>$3.79</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/450.png" style="height: 60px; border-radius: 5px;">
+                        <p>$4.50</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/758.png" style="height: 60px; border-radius: 5px;">
+                        <p>$7.58</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/1515.png" style="height: 60px; border-radius: 5px;">
+                        <p>$15.15</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/2273.png" style="height: 60px; border-radius: 5px;">
+                        <p>$22.73</p>
+                    </div>
+
+                    <div class="col-3 text-center">
+                        <img src="assets/images/services/7728.png" style="height: 60px; border-radius: 5px;">
+                        <p>$77.28</p>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ############ Invoice Table -->
+    <div class="col-8">
+        <form ng-submit="checkout()">
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th width="40%">Description</th>
+                        <th width="20%">Unit Price</th>
+                        <th width="10%">Quantity</th>
+                        <th width="20%">Total Unit Price</th>
+                        <th width="10%" colspan="2">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="data in invoice">
+
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>

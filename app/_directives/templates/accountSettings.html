@@ -1,0 +1,263 @@
+<!-- Change Username and Password Buttons -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-6">
+                    <div class="card btn-outline-dark pointer select-off shadow" ng-click="openEditUsernameModal()">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-edit fa-4x ml-4"></i>
+                            <br><br>
+                            <h5>Change Username</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card btn-outline-dark pointer select-off shadow" ng-click="openChangePasswordModal()">
+                        <div class="card-body text-center">
+                            <i class="fas fa-key fa-4x ml-4"></i>
+                            <br><br>
+                            <h5>Change Password</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br><br>
+
+<!-- Users table -->
+<div ng-if="loggedInUser.type === 'admin'" class="container">
+    <table class="table table-bordered text-center shadow select-off">
+        <thead>
+            <tr>
+                <th width="5%" class="pointer" ng-click="openAddUserModal()"><i class="fas fa-plus-circle fa-lg"></i>
+                </th>
+                <th width="35%">Username</th>
+                <th width="30%">Owner</th>
+                <th colspan="2" width="30%">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in users">
+                <td class="pointer" ng-dblclick="openEditUserModal($index)" title="Double click to edit this user"><i
+                        class="fas fa-edit fa-lg text-dark"></i></td>
+                <td>{{user.username}}</td>
+                <td>{{user.owner}}</td>
+                <td width="15%" class="btn-outline-dark pointer" ng-click="openPermissionsModal($index)"><i
+                        class="fas fa-user-cog fa-lg"></i> Permissions
+                </td>
+                <!-- if user is enabled -->
+                <td width="15%" ng-click="updateUserStatus(user.UID, user.username)" class="btn-outline-danger pointer"
+                    ng-if="users[$index]['user_status'] == 1"><i class="fas fa-ban fa-lg"></i> Disable</td>
+                <!-- if user is disabled -->
+                <td width="15%" ng-click="updateUserStatus(user.UID, user.username)" class="btn-outline-success pointer"
+                    ng-if="users[$index]['user_status'] == 0"><i class="fas fa-play fa-lg"></i> Enable</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- ****************** Change Username Modal ************************** -->
+<div class="modal fade" id="editUsernameModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Username</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="changeUsername()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>Current Username</label>
+                    <input type="text" class="form-control" ng-model="loggedInUser.username" disabled>
+                    <label>Please enter a new username*:</label>
+                    <input type="text" id="newUsername" class="form-control" ng-model="newUsername" spellcheck="false"
+                        autofocus required>
+                    <footer><small>*<span class="text-danger"><b>notice:</b></span> Username cannot have spaces.</small>
+                    </footer>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- $$$$$$$$$$$$$ Change Password Modal $$$$$$$$$$$$$$$$$ -->
+<div class="modal fade" id="changePasswordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Change Password</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>Current Password:</label>
+                    <input id="oldPassword" type="password" class="form-control" ng-model="oldPassword"
+                        spellcheck="false" autofocus required>
+                    <br>
+                    <label>New Password:</label>
+                    <input id="newPassword" type="password" class="form-control" ng-model="newPassword"
+                        spellcheck="false" required>
+                    <label>Confirm Password:</label>
+                    <input type="password" class="form-control" ng-model="confirmPassword" spellcheck="false" required>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" ng-click="changePassword()" class="btn btn-success"><i
+                            class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- +++++++++++++ Add New User Modal +++++++++++++ -->
+<div class="modal fade" id="addUserModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Create New User</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="addUser()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>Username:</label>
+                    <input id="createUsername" type="text" class="form-control" ng-model="createUsername"
+                        spellcheck="false" autofocus required>
+                    <br>
+                    <label>Password:</label>
+                    <input id="createPassword" type="password" class="form-control" ng-model="createPassword"
+                        spellcheck="false" required>
+                    <label>Confirm Password:</label>
+                    <input type="password" class="form-control" ng-model="confirmCreatePassword" spellcheck="false"
+                        required>
+                    <label>Owner:</label>
+                    <input type="text" class="form-control" ng-model="owner" spellcheck="false" required>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- --------------- Edit New User Modal --------------- -->
+<div class="modal fade" id="editUserModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit "{{editUsername}}"</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form ng-submit="editUser()">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <label>Username:</label>
+                    <input id="editUsername" type="text" class="form-control" ng-model="editUsername" spellcheck="false"
+                        autofocus required>
+                    <br>
+                    <label>Owner:</label>
+                    <input type="text" class="form-control" ng-model="editOwner" spellcheck="false" required>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i>
+                        Update</button>
+                    <button type="button" ng-click="deleteUser()" class="btn btn-danger"><i
+                            class="fas fa-trash-alt"></i>
+                        Delete</button>
+                    <button class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ################### Permissions Modal ##################### -->
+<div class="modal fade" id="permissionsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Permissions for {{selectedUser.username}}</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Can Add Services</label>
+                            <select class="form-control"
+                                ng-options="option.value as option.syntax for option in options"
+                                ng-model="canAddService">
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label>Can Add Items</label>
+                            <select class="form-control"
+                                ng-options="option.value as option.syntax for option in options" ng-model="canAddItem">
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Can View Customers</label>
+                            <select class="form-control"
+                                ng-options="option.value as option.syntax for option in options"
+                                ng-model="canViewCustomers">
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label>Can View Payments</label>
+                            <select class="form-control"
+                                ng-options="option.value as option.syntax for option in options"
+                                ng-model="canViewPayments">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <!-- Add new client Button -->
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><i class="fas fa-times"></i>
+                        Cancel</button>
+                    <button type="submit" class="btn btn-success" ng-click="updatePermissions()"><i
+                            class="fas fa-check"></i>
+                        Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

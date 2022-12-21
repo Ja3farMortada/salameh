@@ -1,0 +1,13 @@
+<li class="list-group-item">
+    <form class="form-inline select-off" ng-submit="updateRate()">
+        <div class="form-group">
+            <label class="h5">1 USD =</label>
+            <input type="number" class="form-control col-4 mx-2"
+                placeholder="{{exchangeRate.exchange_rate}} L.L" ng-model="rate" required>
+            <button type="submit" class="btn btn-success">Update</button>
+        </div>
+    </form>
+</li>
+<div>
+    <p class="ml-2 text-secondary">Define 1 USD exchange rate for Lebanese Pounds</p>
+</div>

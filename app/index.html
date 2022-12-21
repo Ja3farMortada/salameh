@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../node_modules/@sweetalert2/themes/dark/dark.min.css">
+
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
+
+</head>
+
+<!-- <body style="background: linear-gradient(to right, #8e9eab, #eef2f3);"> -->
+
+<body ng-app="loginApp" ng-controller="loginController" style="background-color: #8e9eab;">
+    <div class="container mx-auto mt-5 pt-5">
+        <div class="row">
+            <div class="col-4 mx-auto">
+                <div class="card">
+                    <div class="card-header p-3">
+                        <h5 class="card-title text-center mb-0">{{ title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form ng-submit="login()">
+                            <!-- username -->
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input id="usernameField" ng-model="credentials.username" type="text"
+                                    class="form-control" spellcheck="false" autofocus required>
+                            </div>
+                            <!-- password -->
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input ng-model="credentials.password" type="password" class="form-control" required>
+                            </div>
+                            <div class="mb-3 form-check justify-content-center d-flex gap-2">
+                                <input type="checkbox" class="form-check-input" id="check1" style="cursor: pointer;">
+                                <label class="form-check-label" for="check1" style="cursor: pointer;">Keep me logged
+                                    in</label>
+                            </div>
+                            <!-- submit -->
+                            <div class="d-grid">
+                                <button ng-disabled="loading" type="submit" class="btn btn-success"><span
+                                        ng-if="loading" class="spinner-border spinner-border-sm" role="status"></span>
+                                    Login</button>
+                            </div>
+                            <div class="text-center mt-1" ng-cloak>
+                                <small>Salameh Cell v<samp>{{ package.version }}</small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const app = angular.module('loginApp', []);
+
+    app.factory('mainFactory', function () {
+        let model = {};
+        model.getPackages = async () => {
+            let response = await window.electron.ipcRenderer.invoke('read-package');
+            if (response) {
+                return response;
+            }
+        }
+        return model;
+    });
+
+    app.controller('loginController', function ($scope, $http, $timeout, NotificationService, mainFactory) {
+        // Read Package.json
+        mainFactory.getPackages().then(response => {
+            $scope.$digest($scope.package = response);
+        });
+
+        let url = `http://localhost:3000`;
+        $scope.loading = false;
+        $scope.title = 'Please Login to Continue';
+
+        $scope.credentials = {
+            username: null,
+            password: null
+        }
+
+        $scope.login = () => {
+            $scope.loading = true;
+            $http.post(`${url}/login`, $scope.credentials).then(function (response) {
+                if (response.status == 200) {
+                    if (response.data[0]) {
+                        localStorage.setItem('setting', JSON.stringify(response.data[0]));
+                        window.location.replace('main.html')
+                    } else {
+                        NotificationService.playErrorSound();
+                        $scope.credentials.username = null;
+                        $scope.credentials.password = null;
+                        $scope.loading = false;
+                        $scope.title = 'Error username or password!!';
+                        $('#usernameField').trigger("focus");
+                    }
+                }
+            }, function (error) {
+                $scope.credentials.username = null;
+                $scope.credentials.password = null;
+                $scope.loading = false;
+                NotificationService.showErrorText(
+                    'Cannot connect to MySQL server, it may be offline');
+            });
+        }
+
+    });
+</script>
+
+<script src="_services/notificationService.js"></script>
+<script src="_services/dateService.js"></script>
+
+</html>

@@ -1,0 +1,126 @@
+<div class="row d-flex">
+    <div class="col-auto">
+        <button class="btn btn-outline-success"  ng-click="openOffCanvas('add')">+ Add New Service
+            +</button>
+    </div>
+    <div class="col-4 ms-auto">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control" placeholder="Search ..." ng-model="searchVal">
+        </div>
+    </div>
+</div>
+
+<table class="table table-sm table-bordered text-center table-striped mt-3">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Subcategory</th>
+            <th>Cost</th>
+            <th>Price</th>
+            <th colspan="2">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="data in services | filter: searchVal">
+            <td>{{ data.service_ID }}</td>
+            <td>{{ data.service_name }}</td>
+            <td>{{ data.service_description }}</td>
+            <td>{{ data.service_type }}</td>
+            <td>{{ data.service_category }}</td>
+            <td>{{ data.service_sub_category }}</td>
+            <!-- <td>{{ data.image_url }}</td> -->
+            <td>{{ data.service_cost.toLocaleString() }} L.L</td>
+            <td>{{ data.service_price.toLocaleString() }} L.L</td>
+
+            <td ng-click="openOffCanvas('edit', data)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
+            <td ng-click="deleteService(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- OffCanvas -->
+<div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="serviceOffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Add Service</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <form ng-submit="submitService()">
+        <div class="offcanvas-body">
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label>Name</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.service_name">
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Description</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.service_description">
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Service Type</label>
+                        <select class="form-select" ng-model="modalData.service_type">
+                            <option value="Telecom">Telecom</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Gift Cards">Gift Cards</option>
+                            <option value="Gaming">Gaming</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Service Category</label>
+                        <select class="form-select" ng-model="modalData.service_category">
+                            <option value="Touch">Touch</option>
+                            <option value="Alfa">Alfa</option>
+                            <option value="Ogero">Ogero</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Service Subcategory</label>
+                        <select class="form-select" ng-model="modalData.service_sub_category">
+                            <option value="Prepaid Voucher">Prepaid Voucher</option>
+                        </select>
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Notes</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.service_notes">
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Cost</label>
+                        <input type="number" class="form-control" ng-model="modalData.service_cost">
+                    </div>
+    
+                    <div class="col-6 mb-3">
+                        <label>Price</label>
+                        <input type="number" class="form-control" ng-model="modalData.service_price">
+                    </div>
+    
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Image</label>
+                        <input type="file" class="form-control" ngf-select ng-model="img"
+                            ngf-pattern="'image/*'" accept="image/*" ngf-max-size="5MB">
+                    </div>
+    
+                    <div class="col-12 d-flex justify-content-center align-items-end">
+                        <img ngf-src="img" style="height: 100px; border-radius: 5px;">
+                    </div>
+
+                    <div class="col-12 mt-4 text-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas"><i class="fas fa-times"></i>
+                            Close</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+  </div>

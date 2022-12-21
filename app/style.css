@@ -1,0 +1,166 @@
+.border-left-primary {
+    border-left: .25rem solid #007bff !important;
+    /* #4e73df */
+}
+
+.border-left-success {
+    border-left: .25rem solid #28a745 !important;
+}
+
+.border-left-warning {
+    border-left: .25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: .25rem solid #dc3545 !important;
+}
+
+.border-left-dark {
+    border-left: .25rem solid #343a40 !important;
+}
+
+.border-left-pink {
+    border-left: .25rem solid #FF1493 !important;
+}
+
+.text-pink {
+    color: #FF1493;
+}
+
+.badge-fa {
+    width: 2.2rem;
+    height: 2rem;
+}
+
+.info-hover:hover {
+    background-color: #0dcaf0;
+    color: white !important;
+}
+
+.dark-hover:hover {
+    background-color: #343a40;
+    color: white !important;
+}
+
+.warning-hover:hover {
+    background-color: #ffc107;
+    color: white !important;
+}
+
+.danger-hover:hover {
+    background-color: #dc3545;
+    color: white !important;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-Bold.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-Black.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-ExtraBold.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-ExtraBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-ExtraLight.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-ExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-Medium.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-Light.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Tajawal';
+    src: url('assets/fonts/Tajawal-Regular.woff2') format('woff2'),
+        url('assets/fonts/Tajawal-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+* {
+    font-family: 'Tajawal';
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+/* a[ng-click] {
+    cursor: pointer;
+    user-select: none;
+} */
+
+[ng-click] {
+    cursor: pointer;
+}
+
+.active-tab-dir {
+    border-top: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: .15rem solid #041666 !important;
+    color: black !important;
+    background-color: whitesmoke !important;
+    background-color: #0c1e6e10 !important;
+}
+
+
+.service-image {
+    border-radius: 5px;
+    height: 60px;
+}
+
+.services-card {
+    background-color: #FDFEFF;
+}
+
+.services-card > ul > li > a {
+    /* border-top-left-radius: 0% !important; */
+    /* border-top-right-radius: 0% !important; */
+    color: black !important;
+    border: none;
+}
+
+.services-card > ul > li > a.active {
+    border: none;
+    border-bottom: .15rem solid #041666 !important;
+    background-color: #0c1e6e10 !important;
+}
