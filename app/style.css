@@ -159,6 +159,10 @@
     color: #adb5bd !important;
 }
 
+.navbar-brand {
+    color: #F8F9FA !important;
+}
+
 .services-card > ul > li > a {
     /* border-top-left-radius: 0% !important; */
     /* border-top-right-radius: 0% !important; */

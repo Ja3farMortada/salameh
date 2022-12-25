@@ -90,9 +90,9 @@
                                 <i class="fas fa-lg" ng-class="{'fa-sun': theme == 'light', 'fa-moon': theme == 'dark'}"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a href="" class="dropdown-item" ng-click="toggleTheme('light')"><i
+                                <li><a ng-class="{'active': theme == 'light'}" href="" class="dropdown-item" ng-click="toggleTheme('light')"><i
                                             class="fas fa-sun fa-lg"></i> Light</a></li>
-                                <li><a href="" class="dropdown-item" ng-click="toggleTheme('dark')"><i
+                                <li><a ng-class="{'active': theme == 'dark'}" href="" class="dropdown-item" ng-click="toggleTheme('dark')"><i
                                             class="fas fa-moon fa-lg"></i> Dark</a></li>
                             </ul>
                         </li>

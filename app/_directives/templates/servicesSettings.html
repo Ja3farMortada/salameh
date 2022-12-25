@@ -4,15 +4,37 @@
             +</button>
     </div>
     <div class="col-4 ms-auto">
-        <div class="input-group">
+        <!-- <div class="input-group">
             <span class="input-group-text"><i class="fas fa-search"></i></span>
             <input type="text" class="form-control" placeholder="Search ..." ng-model="searchVal">
-        </div>
+        </div> -->
     </div>
 </div>
 
 <table class="table table-sm table-bordered text-center table-striped mt-3">
     <thead>
+        <tr>
+            <!-- <th></th> -->
+            <th colspan="2">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control form-control-sm" placeholder="Name ..." ng-model="searchVal.service_name">
+                </div>
+            </th>
+            <th>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control form-control-sm" placeholder="Description ..." ng-model="searchVal.service_description">
+                </div>
+            </th>
+            <th>
+                <select class="form-control form-control-sm" ng-model="searchVal.service_type">
+                    <option value="">All</option>
+                    <option value="Telecom">Telecom</option>
+                </select>
+            </th>
+
+        </tr>
         <tr>
             <th>#</th>
             <th>Name</th>
@@ -26,7 +48,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr ng-repeat="data in services | filter: searchVal">
+        <tr ng-repeat="data in services | filter: searchVal: strict">
             <td>{{ data.service_ID }}</td>
             <td>{{ data.service_name }}</td>
             <td>{{ data.service_description }}</td>

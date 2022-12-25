@@ -83,7 +83,7 @@ app.controller('mainController', function ($scope, NotificationService) {
         NotificationService.showWarning().then(ok => {
             if (ok) {
                 localStorage.removeItem('setting');
-                window.location.replace('login.html');
+                window.location.replace('index.html');
             }
         })
     };
