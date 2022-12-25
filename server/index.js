@@ -3,6 +3,7 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const md5 = require('md5')
 
 
 const db = require('./database');
@@ -39,9 +40,11 @@ const upload = multer({ //multer settings
 
 const loginRoutes = require('./routes/login.routes');
 const servicesRoutes = require('./routes/services.routes');
+const usersRoutes = require('./routes/users.routes');
 
 
 loginRoutes(app, db);
 servicesRoutes(app, db, upload, fs, path);
+usersRoutes(app, db, md5)
 
 module.exports = app;

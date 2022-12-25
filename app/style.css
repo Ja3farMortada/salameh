@@ -115,9 +115,9 @@
     font-display: swap;
 }
 
-* {
+/* * {
     font-family: 'Tajawal';
-}
+} */
 
 .pointer {
     cursor: pointer;
@@ -148,8 +148,15 @@
     height: 60px;
 }
 
-.services-card {
+/* .services-card {
     background-color: #FDFEFF;
+} */
+
+.bg-black {
+    background-color: #000;
+}
+.nav-link {
+    color: #adb5bd !important;
 }
 
 .services-card > ul > li > a {

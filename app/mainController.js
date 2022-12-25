@@ -87,4 +87,15 @@ app.controller('mainController', function ($scope, NotificationService) {
             }
         })
     };
+
+    $scope.theme = localStorage.getItem('theme') || 'dark';
+    $scope.toggleTheme = mode => {
+        // if ($scope.theme == 'light') {
+        //     $scope.theme = 'dark';
+        //     localStorage.setItem('theme', 'dark');
+        //     return;
+        // }
+        $scope.theme = mode;
+        localStorage.setItem('theme', mode);
+    }
 });
