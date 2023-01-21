@@ -1,0 +1,146 @@
+<div class="row">
+    <div class="col-5">
+        <button class="btn btn-outline-success" ng-click="openOffCanvas('add')">+ Add New Voucher
+            +</button>
+    </div>
+    <div class="col-auto">
+        <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
+            template-url="templates/dirPagination.tpl.html">
+        </dir-pagination-controls>
+    </div>
+</div>
+
+<!-- table -->
+<table class="table table-sm table-bordered text-center table-striped">
+    <thead>
+        <tr>
+            <th>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control form-control-sm" placeholder="Name ..."
+                        ng-model="searchVal.item_name">
+                </div>
+            </th>
+            <th>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control form-control-sm" placeholder="Description ..."
+                        ng-model="searchVal.item_description">
+                </div>
+            </th>
+            <th>
+                <select class="form-control form-control-sm" ng-model="searchVal.item_sub_category">
+                    <option value="">All</option>
+                    <option value="Touch">Touch</option>
+                    <option value="Alfa">Alfa</option>
+                    <option value="Internet">Internet</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Other">Other</option>
+                </select>
+            </th>
+
+        </tr>
+        <tr>
+            <th width="15%">Name</th>
+            <th width="30%">Description</th>
+            <th width="15%">Category</th>
+            <th width="15%">Cost</th>
+            <th width="15%">Price</th>
+            <th width="10%" colspan="2">Options</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr
+            dir-paginate="data in vouchers | filter: searchVal: strict | orderBy: 'item_sub_category' | itemsPerPage:itemsPerPage.value">
+            <td>{{ data.item_name }}</td>
+            <td>{{ data.item_description }}</td>
+            <td>{{ data.item_sub_category }}</td>
+            <td>{{ data.item_cost.toLocaleString() }} L.L</td>
+            <td>{{ data.item_price.toLocaleString() }} L.L</td>
+            <td ng-click="openOffCanvas('edit', data)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
+            <td ng-click="deleteVoucher(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
+        </tr>
+        <tr ng-if="(vouchers | filter: searchVal).length == 0 && searchVal">
+            <td colspan="7">No matching records found!</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- OffCanvas -->
+<div class="offcanvas offcanvas-start text-bg-darks" tabindex="-1" id="voucherOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Vouchers</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <form ng-submit="submitVoucher()">
+        <div class="offcanvas-body">
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label>Voucher Category</label>
+                        <select class="form-select" ng-model="modalData.item_sub_category" required>
+                            <option value=""> --- </option>
+                            <option value="Touch">Touch</option>
+                            <option value="Alfa">Alfa</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Name</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.item_name"
+                            required>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Description</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.item_description"
+                            required>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Cost</label>
+                        <input type="number" class="form-control" ng-model="modalData.item_cost" required>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Price</label>
+                        <input type="number" class="form-control" ng-model="modalData.item_price" required>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Notes</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.item_notes">
+                    </div>
+
+                    <div class="col-12 mb-3 d-flex justify-content-center">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="showItem"
+                                ng-model="modalData.show_on_sell">
+                            <label class="form-check-label" for="showItem">Show Item on Sell Page?</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Image</label>
+                        <input type="file" class="form-control" ngf-select ng-model="img" ngf-pattern="'image/*'"
+                            accept="image/*" ngf-max-size="5MB" ng-required="modalType == 'add'">
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-center align-items-end">
+                        <img ngf-src="img" style="height: 100px; border-radius: 5px;">
+                    </div>
+
+                    <div class="col-12 mt-4 text-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas"><i
+                                class="fas fa-times"></i>
+                            Close</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

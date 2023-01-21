@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../node_modules/jquery-ui/themes/base/datepicker.css">
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="../node_modules/@sweetalert2/themes/dark/dark.min.css">
+    <link rel="stylesheet" href="../node_modules/@jarstone/dselect/dist/css/dselect.min.css">
 
     <!-- JS Frameworks -->
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
@@ -25,6 +26,9 @@
     <script src="../node_modules/moment/moment.js"></script>
     <script src="../node_modules/chart.js/dist/chart.umd.js"></script>
     <script src="../node_modules/ng-file-upload/dist/ng-file-upload.min.js"></script>
+    <script src="../node_modules/mousetrap/mousetrap.min.js"></script>
+    <script src="../node_modules/mousetrap/plugins/global-bind/mousetrap-global-bind.min.js"></script>
+    <script src="../node_modules/@jarstone/dselect/dist/js/dselect.min.js"></script>
 
     <!-- Load Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
@@ -37,7 +41,7 @@
     <script src="_services/dateService.js"></script>
 </head>
 
-<body data-bs-theme="{{ theme }}">
+<body data-bs-theme="{{ theme }}" ng-cloak>
 
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
@@ -48,35 +52,32 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#!/services"><i class="fas fa-money-check"></i> Services</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/sell'}" class="nav-link" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
+                        <a ng-class="{'active': tabSelected == '/stock'}" class="nav-link" href="#!/stock"><i class="fas fa-boxes"></i> Stock</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#!/stock"><i class="fas fa-boxes"></i> Stock</a>
+                        <a ng-class="{'active': tabSelected == '/history'}" class="nav-link" href="#!/history"><i class="fas fa-history"></i> History</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#!/history"><i class="fas fa-history"></i> History</a>
-                    </li>
-                    <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#!/customers"><i class="fas fa-users"></i> Customers</a>
-                    </li>
-                    <li class="nav-item" ng-if="loggedInUser.canViewCustomers === 1">
-                        <a class="nav-link" href="#!/debts"><i class="fas fa-users"></i> Debts</a>
-                    </li>
-                    <li class="nav-item" ng-if="loggedInUser.canViewPayments === 1">
-                        <a class="nav-link" href="#!/payments"><i class="fas fa-money-bill-wave"></i> Payments</a>
-                    </li>
-                    <li class="nav-item" ng-if="loggedInUser.type === 'admin'">
-                        <a class="nav-link" href="#!/reports"><i class="fas fa-chart-line fa-fw"></i> Reports</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/debts'}" class="nav-link" href="#!/debts"><i class="fas fa-users"></i> Debts</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href=""><i class="fas fa-chart-line fa-fw"></i> Reports</a>
+                    </li>
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#!/reminders"><i class="fas fa-stopwatch"></i> Reminders <span
                                 class="badge badge-pill badge-danger"
                                 ng-if="remindersCount.length > 0">{{remindersCount.length}}</span></a>
-                    </li>
+                    </li> -->
 
                 </ul>
 
@@ -130,26 +131,32 @@
 </body>
 
 <!-- Load Controllers -->
-<script src="controller/servicesController.js"></script>
+<script src="controller/sellController.js"></script>
 <script src="controller/stockController.js"></script>
+<script src="controller/historyController.js"></script>
+<script src="controller/debtsController.js"></script>
 <script src="controller/settingsController.js"></script>
 
 <!-- Load Models -->
-<script src="model/servicesFactory.js"></script>
+<script src="model/sellFactory.js"></script>
 <script src="model/stockFactory.js"></script>
+<script src="model/historyFactory.js"></script>
+<script src="model/debtsFactory.js"></script>
 <script src="model/settingsFactory.js"></script>
 
 <!-- Load Directives -->
 <script src="_directives/js/accountSettings.js"></script>
 <script src="_directives/js/generalSettings.js"></script>
 <script src="_directives/js/stockSettings.js"></script>
-<script src="_directives/js/servicesSettings.js"></script>
+<script src="_directives/js/rateSettings.js"></script>
+<script src="_directives/js/vouchersSettings.js"></script>
 <script src="_directives/js/customersSettings.js"></script>
 
 <!-- Load Directive's Models -->
 <script src="_directives/models/accountFactory.js"></script>
 <script src="_directives/models/generalFactory.js"></script>
-<script src="_directives/models/stockModel.js"></script>
+<script src="_directives/models/rateFactory.js"></script>
+<script src="_directives/models/vouchersFactory.js"></script>
 <script src="_directives/models/customersFactory.js"></script>
 
 </html>

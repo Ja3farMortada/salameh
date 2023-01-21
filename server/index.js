@@ -39,12 +39,28 @@ const upload = multer({ //multer settings
 
 
 const loginRoutes = require('./routes/login.routes');
-const servicesRoutes = require('./routes/services.routes');
+
+const sellRoutes = require('./routes/sell.routes');
+const stockRoutes = require('./routes/stock.routes');
+const historyRoutes = require('./routes/history.routes');
+const debtsRoutes = require('./routes/debts.routes');
+
+const settingsRoutes = require('./routes/settings.routes');
 const usersRoutes = require('./routes/users.routes');
+const vouchersRoutes = require('./routes/vouchers.routes');
+const customersRoutes = require('./routes/customers.routes');
 
 
 loginRoutes(app, db);
-servicesRoutes(app, db, upload, fs, path);
-usersRoutes(app, db, md5)
+
+sellRoutes(app, db);
+stockRoutes(app, db, upload, fs, path);
+historyRoutes(app, db);
+debtsRoutes(app, db);
+
+settingsRoutes(app, db, md5);
+usersRoutes(app, db, md5);
+vouchersRoutes(app, db, upload, fs, path);
+customersRoutes(app, db);
 
 module.exports = app;

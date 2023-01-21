@@ -1,12 +1,13 @@
 const mysql = require('mysql2');
 
 var pool = mysql.createPool({
-    connectionLimit: 1,
+    connectionLimit: 10,
     host: 'localhost',
     user: 'root',
     password: 'roottoor',
     database: 'salameh',
-    multipleStatements: true
+    multipleStatements: true,
+    dateStrings: true
 });
 
 pool.getConnection((err, connection) => {

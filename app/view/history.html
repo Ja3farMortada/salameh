@@ -1,0 +1,120 @@
+<div class="container-fluid">
+
+    <div class="row mt-4">
+        <!-- invoices tab -->
+        <div class="col-4">
+            <!-- invoices table -->
+            <table class="table table-bordered text-center table-hover table-sm">
+                <thead style="user-select: none">
+                    <!-- date input -->
+                    <tr>
+                        <th colspan="4">
+                            <div class="row d-flex align-items-center justify-content-center g-2">
+                                <label class="col-auto" for="invoiceDatePicker">Date:</label>
+                                <div class="col-auto">
+                                    <input type="text" class="form-control text-center" id="invoiceDatePicker">
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-info" ng-click="today()">today</button>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    <!-- table head -->
+                    <tr>
+                        <th width="15%">#</th>
+                        <th width="40%">Customer</th>
+                        <th width="20%">Time</th>
+                        <th width="25%">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- sales invoices -->
+                    <tr dir-paginate="invoice in salesInvoices | itemsPerPage:10" pagination-id="sales" class="pointers"
+                        ng-click="showInvoiceDetails(invoice.invoice_ID, invoice.total_price)"
+                        ng-class="{'table-active': isActive(invoice.invoice_ID)}">
+                        <td>{{ invoice.invoice_ID }}</td>
+                        <td>{{ invoice.customer_name || ' --- ' }}</td>
+                        <td>{{ invoice.invoice_time }}</td>
+                        <td>{{ invoice.total_price.toLocaleString() }} L.L</td>
+                    </tr>
+
+                    <!-- if no records -->
+                    <tr ng-if="salesInvoices.length == 0">
+                        <td colspan="4" class="table-active">No Records Yet!</td>
+                    </tr>
+                </tbody>
+            </table>
+            <dir-pagination-controls pagination-id="sales" max-size="5" direction-links="true" boundary-links="false"
+                template-url="templates/dirPagination.tpl.html">
+            </dir-pagination-controls>
+        </div>
+
+        <!-- invoice details table -->
+        <div class="col-8">
+
+
+
+            <!-- table -->
+            <table ng-if="items" class="table table-bordered text-center table-sm select-off">
+                <thead>
+                    <tr>
+                        <th colspan="5">
+                            <!-- user and total and buttons -->
+                            <div ng-if="items" class="row d-flex justify-content-betweens align-items-center g-1">
+                                <div class="col-4" ng-if="user">
+                                    <span class="h6">User: {{ user }}</span>
+                                </div>
+                                <div class="col-4">
+                                    <button disabled class="btn btn-outline-dark btn-sm" ng-click="openPrintModal()"><i
+                                            class="fas fa-print"></i>
+                                        Print</button>
+                                    <button disabled ng-if="loggedInUser.type ==='admin'" class="btn btn-outline-danger btn-sm"
+                                        ng-click="deleteInvoice()"><i class="fas fa-trash-alt"></i> Delete</button>
+                                </div>
+                                <div class="col-4 text-danger text-end">
+                                    <h4 class="m-0">Total: {{ totalPrice.toLocaleString() }} L.L</h4>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="40%">Name</th>
+                        <th width="10%">$ Rate</th>
+                        <th width="20%">Unit Price</th>
+                        <th width="10%">Qty</th>
+                        <th width="20%">Total Unit Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- sales invoice selected -->
+                    <tr ng-repeat="data in items">
+                        <td>{{ data.item_description }}</td>
+                        <td>{{ data.exchange_rate.toLocaleString() }} L.L</td>
+
+                        <!-- unit price in $ and L.L -->
+                        <td>
+                            {{ data.currency == 'lira' ? data.unit_price.toLocaleString() : (data.unit_price * data.exchange_rate).toLocaleString() }}
+                            L.L
+                            <small ng-if="data.currency == 'dollar'">({{ data.unit_price }}$)</small>
+                        </td>
+
+                        <td>{{ data.qty }}</td>
+
+                        <!-- total Unit price in $ and L.L -->
+                        <td>{{ data.currency == 'lira' ? (data.unit_price * data.qty).toLocaleString() : (data.unit_price * data.qty * data.exchange_rate).toLocaleString() }}
+                            L.L
+                            <small
+                                ng-if="data.currency == 'dollar'">({{ (data.unit_price * data.qty).toLocaleString() }}$)</small>
+                        </td>
+                    </tr>
+
+                    <tr class="table-active" ng-if="!items">
+                        <td colspan="4">There is no invoice selected yet</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

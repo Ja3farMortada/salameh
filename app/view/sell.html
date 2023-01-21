@@ -1,0 +1,166 @@
+<div class="container-fluid row">
+
+    <!-- vouchers section -->
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header vouchers-card">
+                <ul class="nav nav-tabs nav-fill card-header-tabs">
+                    <li class="nav-item">
+                        <a ng-class="{'active': selectedCategory == 'Touch'}" class="nav-link"
+                            ng-click="setCategory('Touch')"><img src="assets/images/touch.png" height="35px"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': selectedCategory == 'Alfa'}" class="nav-link"
+                            ng-click="setCategory('Alfa')"><img src="assets/images/alfa.png" height="35px"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': selectedCategory == 'Internet'}" class="nav-link"
+                            ng-click="setCategory('Internet')"><img src="assets/images/internet.png" height="35px"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': selectedCategory == 'Entertainment'}" class="nav-link"
+                            ng-click="setCategory('Entertainment')"><img src="assets/images/entertainment.png"
+                                height="35px"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': selectedCategory == 'Other'}" class="nav-link"
+                            ng-click="setCategory('Other')"><img src="assets/images/other.jpg" height="35px"></a>
+                    </li>
+                </ul>
+            </div>
+            <!-- ################# vouchers section ####################### -->
+            <div class="card-body">
+                <h5 class="text-center">{{ selectedCategory }}</h5>
+                <div class="row">
+                    <div class="col-3 text-center" ng-repeat="data in vouchers | filter: selectedCategory: strict">
+                        <div ng-click="addVoucher(data)" class="mt-1">
+                            <img class="voucher-image" ng-src="http://localhost:3000{{data.image_url}}"
+                                alt="{{ data.item_description }}">
+                            <small>{{data.item_name}}</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-dark" role="alert"
+                        ng-if="(vouchers | filter: selectedCategory).length == 0 && selectedCategory">
+                        <strong>No Vouchers Yet!</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- invoice section -->
+    <div class="col-8">
+        <div class="container">
+            <div class="row d-flex justify-content-between align-items-center">
+                <div class="col-auto">
+                    <button class="btn btn-success" ng-click="checkout()"><i class="fas fa-cart-arrow-down"></i>
+                        Checkout</button>
+                    <button class="btn btn-primary" ng-click="openCustomerModal()"><i class="fas fa-user-pen"></i>
+                        Add To Customer</button>
+                </div>
+                <div class="col-auto">
+                    <h3 class="text-end mt-4 text-danger">Total: {{ totalPrice.toLocaleString() }} L.L</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- invoice table -->
+        <table class="table table-bordered table-striped text-center table-sm">
+            <thead>
+                <tr>
+                    <th width="17%">Barcode</th>
+                    <th width="30%">Description</th>
+                    <th width="20%">Unit Price</th>
+                    <th width="5%">Qty</th>
+                    <th width="23%">Total Price</th>
+                    <th width="5%">Del</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="data in invoice">
+                    <td>{{ data.barcode || ' --- ' }}</td>
+                    <td>{{ data.item_description }}</td>
+
+                    <!-- unit price if currency in L.L -->
+                    <td>{{ data.currency == 'lira' ? data.unit_price.toLocaleString() : (data.unit_price * exchangeRate.setting_value).toLocaleString() }}
+                        L.L
+                        <small ng-if="data.currency == 'dollar'">({{ data.unit_price }}$)</small>
+                    </td>
+
+                    <!-- qty input -->
+                    <td>
+                        <form ng-submit="triggerFocus()">
+                            <input id="qtyInput{{$index}}" type="number" min="1" max="100"
+                                class="form-control form-control-sm text-center posInput" ng-model="data.qty" required>
+                        </form>
+                    </td>
+
+                    <!-- total in L.L -->
+                    <td>{{ data.currency == 'lira' ? (data.unit_price * data.qty).toLocaleString() : (data.unit_price * data.qty * exchangeRate.setting_value).toLocaleString() }}
+                        L.L
+                        <small
+                            ng-if="data.currency == 'dollar'">({{ (data.unit_price * data.qty).toLocaleString() }}$)</small>
+                    </td>
+
+                    <!-- delete -->
+                    <td ng-click="removeItem($index)" class="danger-hover text-danger"><i
+                            class="fas fa-minus fa-lg"></i></td>
+                </tr>
+                <tr>
+                    <!-- Barcode Input -->
+                    <td>
+                        <form ng-submit="submitBarcode()">
+                            <input type="number" min="0" spellcheck="false"
+                                class="form-control form-control-sm posInput" id="barcodeInput" ng-model="barcodeInput"
+                                placeholder="focus to scan barcode ...">
+                        </form>
+                    </td>
+
+                    <!-- name input -->
+                    <td>
+                        <form ng-submit="submitName()">
+                            <input list="itemsList" type="search" class="form-control form-control-sm posInput" id="nameInput" ng-model="inputName"
+                            placeholder="Search no barcoded items ..."
+                            spellcheck="false">
+                            <datalist id="itemsList">
+                                <option value="{{ data.item_description }}" ng-repeat="data in items">{{ data.item_ID }}</option>
+                            </datalist>
+                        </form>
+                    </td>
+
+                    <td colspan="3"></td>
+                    <td ng-if="invoice.length > 0" class="danger-hover text-danger" ng-click="clearInvoice()"><i
+                            class="fas fa-trash-alt"></i></td>
+                    <td ng-if="invoice.length == 0"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Choose Customer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="checkoutCustomer()">
+                <div class="modal-body">
+                    <select id="customer_select" class="form-select" ng-model="selectedCustomer">
+                        <option value="">Select Customer:</option>
+                        <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

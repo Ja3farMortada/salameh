@@ -27,18 +27,19 @@ app.service('NotificationService', ['$timeout', function ($timeout) {
             title: 'ERROR!',
             text: `${error.data.sqlMessage}`,
             icon: 'error'
-            // returnFocus: false
         });
     };
 
     this.showErrorText = text => {
-        Swal.fire({
+        return Swal.fire({
             title: 'ERROR!',
             text: `${text}`,
-            icon: 'error'
+            icon: 'error',
+            returnFocus: true
         });
     };
 
+    // this will focus on cancel
     this.showWarning = () => {
         return Swal.fire({
             title: "WARNING",
@@ -46,9 +47,23 @@ app.service('NotificationService', ['$timeout', function ($timeout) {
             icon: "warning",
             showCancelButton: true,
             focusConfirm: false,
-            reverseButtons: true
+            reverseButtons: true,
+            returnFocus: false
         });
     };
+
+    // this will focus on confirm
+    this.showConfirm = () => {
+        return Swal.fire({
+            title: "WARNING",
+            text: "Are you sure you want to proceed?",
+            icon: "warning",
+            showCancelButton: true,
+            focusConfirm: true,
+            reverseButtons: true,
+            returnFocus: false
+        });
+    }
 
     this.playErrorSound = () => {
         errorAudio.play();

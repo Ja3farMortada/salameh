@@ -1,11 +1,11 @@
 <div class="row g-0">
-    <div class="col-3 border-end">
-        <ul class="list-group list-group-flush mb-4 border-bottom">
+    <div class="col-2">
+        <ul class="list-group list-group-flush mb-4 border-bottom border-end">
             <li class="list-group-item text-center">
                 <h3><strong>Settings</strong></h3>
             </li>
         </ul>
-        <ul class="list-group list-group-flush border-bottom">
+        <ul class="list-group list-group-flush border-bottom border-end">
 
             <!-- Account -->
             <a href="" ng-click="selectTab('Account')" ng-class="{'active': tabSelected === 'Account'}"
@@ -24,11 +24,11 @@
                 class="list-group-item list-group-item-action d-flex h5 mb-0"><span
                     class="badge bg-danger badge-fa me-4 d-flex align-items-center justify-content-center"><i
                         class="fas fa-boxes fa-lg"></i></span>Stock</a>
-            <!-- Services -->
-            <a href="" ng-click="selectTab('Services')" ng-class="{'active': tabSelected === 'Services'}"
+            <!-- Vouchers -->
+            <a href="" ng-click="selectTab('Vouchers')" ng-class="{'active': tabSelected === 'Vouchers'}"
                 class="list-group-item list-group-item-action d-flex h5 mb-0"><span
-                    class="badge bg-primary badge-fa me-4 d-flex align-items-center justify-content-center"><i
-                        class="fas fa-money-check"></i></span>Services</a>
+                    class="badge bg-info badge-fa me-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-money-check"></i></span>Vouchers</a>
             <!-- Customers -->
             <a href="" ng-click="selectTab('Customers')" ng-class="{'active': tabSelected === 'Customers'}"
                 class="list-group-item list-group-item-action d-flex h5 mb-0"><span
@@ -36,7 +36,7 @@
                         class="fas fa-users"></i></span>Customers</a>
         </ul>
     </div>
-    <div class="col-9">
+    <div class="col-10">
         <!-- Header section -->
         <ul class="list-group list-group-flush mb-4 border-bottom">
             <li class="list-group-item text-center">
@@ -54,10 +54,15 @@
             <general-settings ng-if="tabSelected === 'General'"></general-settings>
 
             <!-- Stock Settings Directive -->
-            <stock-settings ng-if="tabSelected === 'Stock'"></stock-settings>
+            <div class="container" ng-if="tabSelected === 'Stock'">
+                <exchange-rate></exchange-rate>
+                <div class="mt-5">
+                    <stock-settings></stock-settings>
+                </div>
+            </div>
 
-            <!-- Services Settings Directive -->
-            <services-settings ng-if="tabSelected === 'Services'"></services-settings>
+            <!-- Vouchers Settings Directive -->
+            <vouchers-settings ng-if="tabSelected === 'Vouchers'"></vouchers-settings>
 
             <!-- Customers Settings Directive -->
             <customers-settings ng-if="tabSelected === 'Customers'"></customers-settings>

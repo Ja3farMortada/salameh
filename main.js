@@ -59,25 +59,27 @@ app.on('window-all-closed', () => {
 })
 
 
-ipcMain.on('backupDB', () => {
-    dialog.showSaveDialog({
-        defaultPath: 'med-equipment.sql',
+ipcMain.handle('backupDB', () => {
+    return dialog.showSaveDialog({
+        defaultPath: 'database.sql',
         properties: ['dontAddToRecent']
     }).then(function (data) {
         if (data.canceled == false) {
-            mysqldump({
+            return mysqldump({
                 connection: {
                     host: 'localhost',
                     user: 'root',
-                    password: keys.password,
-                    database: 'med-equipments'
+                    password: 'roottoor',
+                    database: 'salameh'
                 },
                 dumpToFile: `${data.filePath}`
             }).then(function () {
-                win.webContents.send('backup-success')
+                return 'success';
             }, function (error) {
-                win.webContents.send('backup-error')
+                return (error);
             })
+        } else {
+            return 'canceled'
         }
     })
 });

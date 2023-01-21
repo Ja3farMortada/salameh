@@ -37,6 +37,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.2.1",
+        "@jarstone/dselect": "^1.0.4",
         "@sweetalert2/themes": "^5.0.15",
         "angular": "^1.8.3",
         "angular-route": "^1.8.3",
@@ -49,6 +50,7 @@
         "jquery": "^3.6.0",
         "jquery-ui": "^1.13.2",
         "moment": "^2.29.4",
+        "mousetrap": "^1.6.5",
         "ng-file-upload": "^12.2.13",
         "sweetalert2": "^11.4.26"
     }

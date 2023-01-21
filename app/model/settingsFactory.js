@@ -20,8 +20,8 @@ app.factory('settingsFactory', function () {
                     this.tabSelected = 'Stock';
                     break;
 
-                case 'Services':
-                    this.tabSelected = 'Services';
+                case 'Vouchers':
+                    this.tabSelected = 'Vouchers';
                     break;
 
                 case 'Customers':

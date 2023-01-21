@@ -9,56 +9,60 @@ app.directive('customersSettings', function (customersFactory) {
 
             scope.customers = customersFactory.customers;
 
+            // let offCanvasEl = document.getElementById('offcanvasBottom')
+            const offCanvas = new bootstrap.Offcanvas(document.getElementById('customerOffCanvas'));
 
-            scope.openNewCustomerModal = () => {
-                scope.selectedModal = 'add';
-                scope.modalTitle = 'Add New Customer';
-                scope.customerDetails = {
-                    customer_name: null,
-                    customer_phone: null,
-                    customer_address: null,
-                    customer_debit: 0
-                };
+            $('#customerOffCanvas').on('shown.bs.offcanvas', event => {
+                $('#nameInput').trigger('focus');
+            })
 
-                $('#customerModal').modal('show');
-                $('#customerModal').on('shown.bs.modal', function () {
-                    $(this).find('[autofocus]').focus();
-                });
-            };
+            let modalType;
+            scope.openOffCanvas = (type, data) => {
+                if (type == 'edit') {
+                    modalType = 'edit'
+                    scope.modalData = {};
+                    angular.copy(data, scope.modalData);
+                    offCanvas.show();
+                } else {
+                    modalType = 'add'
+                    scope.modalData = {};
+                    offCanvas.show();
+                }
+            }
 
-            let index;
-            scope.openEditCustomerModal = ID => {
-                scope.selectedModal = 'edit';
-                scope.modalTitle = 'Edit Customer';
-                index = scope.customers.findIndex(index => index.customer_ID == ID);
-                scope.customerDetails = {};
-                angular.copy(scope.customers[index], scope.customerDetails);
-                $('#customerModal').modal('show');
-                $('#customerModal').on('shown.bs.modal', function () {
-                    $(this).find('[autofocus]').focus();
-                });
-            };
-
-            function addCustomer() {
-                customersFactory.addCustomer(scope.customerDetails);
-            };
-
-            function editCustomer() {
-                customersFactory.editCustomer(scope.customerDetails).then(function (response) {
-                    angular.copy(response[0], scope.customers[index]);
-                })
-            };
-
+            // submit offCanvas
             scope.submit = () => {
-                switch (scope.selectedModal) {
+                switch (modalType) {
                     case 'add':
-                        addCustomer();
+                        customersFactory.addCustomer(scope.modalData).then(response => {
+                            if (response) {
+                                scope.modalData = {
+                                    customer_name: null,
+                                    customer_phone: null,
+                                    customer_address: null,
+                                    dollar_debt: null,
+                                    lira_debt: null,
+                                    customer_notes: null
+                                }
+                                $('#nameInput').trigger('focus')
+                            }
+                        })
                         break;
                     case 'edit':
-                        editCustomer();
+                        customersFactory.updateCustomer(scope.modalData).then(response => {
+                            if (response) {
+                                offCanvas.hide()
+                            }
+                        })
+
                         break;
                 }
-            };
+            }
+
+            // Delete service
+            scope.deleteCustomer = data => {
+                customersFactory.deleteCustomer(data);
+            }
         }
     }
 });

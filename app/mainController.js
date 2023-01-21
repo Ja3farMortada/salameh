@@ -5,50 +5,25 @@ app.config(function ($routeProvider) {
 
     $routeProvider
 
-        .when('/services', {
-            templateUrl: 'view/services.html',
-            controller: 'servicesController'
+        .when('/sell', {
+            templateUrl: 'view/sell.html',
+            controller: 'sellController'
         })
-
-        // .when('/sell', {
-        //     templateUrl: 'sell.html',
-        //     controller: 'sellController'
-        // })
 
         .when('/stock', {
             templateUrl: 'view/stock.html',
             controller: 'stockController'
         })
 
-        // .when('/history', {
-        //     templateUrl: 'history.html',
-        //     controller: 'historyController'
-        // })
+        .when('/history', {
+            templateUrl: 'view/history.html',
+            controller: 'historyController'
+        })
 
-        // .when('/customers', {
-        //     templateUrl: 'customers.html',
-        //     controller: 'customersController'
-        // })
-
-        // .when('/debts', {
-        //     templateUrl: 'debts.html',
-        //     controller: 'debtsController'
-        // })
-
-        // .when('/payments', {
-        //     templateUrl: 'payments.html',
-        //     controller: 'paymentsController'
-        // })
-
-        // .when('/reports', {
-        //     templateUrl: 'reports.html',
-        //     controller: 'reportsController'
-        // })
-
-        // .when('/reminders', {
-        //     templateUrl: 'reminders.html',
-        //     controller: 'remindersController'
-        // })
+        .when('/debts', {
+            templateUrl: 'view/debts.html',
+            controller: 'debtsController'
+        })
 
         .when('/settings', {
             templateUrl: 'view/settings.html',
@@ -56,7 +31,7 @@ app.config(function ($routeProvider) {
         })
 
         .otherwise({
-            redirectTo: '/services'
+            redirectTo: '/sell'
         });
 });
 
@@ -64,6 +39,7 @@ app.config(function ($routeProvider) {
 app.factory('mainFactory', function () {
     let model = {};
 
+    model.loggedInUser = JSON.parse(localStorage.getItem('setting'));
 
     model.getPackages = async () => {
         let response = await window.electron.ipcRenderer.invoke('read-package');
@@ -76,7 +52,12 @@ app.factory('mainFactory', function () {
 })
 
 // Controller
-app.controller('mainController', function ($scope, NotificationService) {
+app.controller('mainController', function ($scope, NotificationService, $rootScope, $location) {
+
+    // select tab
+    $rootScope.$on('$routeChangeSuccess', function() {
+        $scope.tabSelected = $location.path();
+    });
 
     // Logout
     $scope.logout = function () {

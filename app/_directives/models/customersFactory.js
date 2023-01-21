@@ -6,52 +6,60 @@ app.factory('customersFactory', function ($http, NotificationService) {
     var model = {};
     model.customers = [];
 
-    const getCustomers = function () {
-        return $http.get(`${url}/getCustomers`).then(function (response) {
+    const getCustomers = () => {
+        return $http.get(`${url}/getCustomers`).then(response => {
             angular.copy(response.data, model.customers);
-        }, function (error) {
+        }, error => {
             NotificationService.showError(error);
         });
     };
-    model.getCustomers = getCustomers();
+    getCustomers();
 
-    model.fetchCustomers = function () {
-        return $http.get(`${url}/getCustomers`).then(function (response) {
+    model.fetchCustomers = () => {
+        return $http.get(`${url}/getCustomers`).then(response => {
             angular.copy(response.data, model.customers);
-        }, function (error) {
+        }, error => {
             NotificationService.showError(error);
         });
     };
 
-    model.addCustomer = function (data) {
+    model.addCustomer = data => {
         return $http.post(`${url}/addCustomer`, data).then(response => {
             model.customers.push(response.data);
-            $('#customerModal').modal('hide');
             NotificationService.showSuccess();
+            return response.data;
         }, function (err) {
             NotificationService.showError(err);
         })
     };
 
-    model.editCustomer = function (data) {
-        return $http.post(`${url}/editCustomer`, data).then(response => {
-            $('#customerModal').modal('hide');
+    model.updateCustomer = data => {
+        return $http.post(`${url}/updateCustomer`, data).then(response => {
+            let index = model.customers.findIndex(x => x.customer_ID == data.customer_ID);
+            model.customers[index] = response.data;
             NotificationService.showSuccess();
             return response.data;
-        }, function (err) {
-            NotificationService.showError(err);
+        }, error => {
+            NotificationService.showError(error);
         });
     };
 
-    model.deleteCustomer = function (data) {
-        return $http.post(`${url}/deleteCustomer`, data).then(res => {
-            const index = model.customers.findIndex((cus => cus.customer_ID == res.data.customer_ID));
-            model.customers.splice(index, 1);
-            NotificationService.showSuccess();
-        }, function (err) {
-            NotificationService.showError(err);
-        });
-    };
+    // // delete customer
+    model.deleteCustomer = data => {
+        NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                $http.post(`${url}/deleteCustomer`, data).then(response => {
+                    if (response.data == 'deleted') {
+                        let index = model.customers.findIndex(x => x.customer_ID == data.customer_ID);
+                        model.customers.splice(index, 1);
+                        NotificationService.showSuccess();
+                    }
+                }, error => {
+                    NotificationService.showError(error);
+                })
+            }
+        })
+    }
 
     return model;
 });

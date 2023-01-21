@@ -1,73 +1,106 @@
-<input type="text" class="form-control col-4" ng-model="searchval" placeholder="search ..." spellcheck="false">
-<br>
-<table class="table table-bordered text-center table-sm" style="user-select: none">
+<div class="row d-flex justify-content-between">
+    <div class="col-auto">
+        <button class="btn btn-outline-success" ng-click="openOffCanvas('add')">+ Add New Customer +</button>
+    </div>
+    <div class="col-4">
+        <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="search" class="form-control form-control" placeholder="Search ..." ng-model="searchCustomers"
+                spellcheck="false">
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-striped text-center table-sm mt-3">
     <thead>
         <tr>
-            <th style="width: 5%" class="pointer" ng-click="openNewCustomerModal()"><i
-                    class="fas fa-user-plus fa-lg"></i></th>
-            <th>ID</th>
-            <th>Customer Name</th>
-            <th>Phone number</th>
-            <th>Address</th>
+            <th width="25%">Name</th>
+            <th width="15%">Phone</th>
+            <th width="20%">Address</th>
+            <th width="15%">Debts in USD</th>
+            <th width="15%">Debts in LBP</th>
+            <th width="10%" colspan="2">Options</th>
         </tr>
     </thead>
     <tbody>
-        <tr dir-paginate="customer in customers|itemsPerPage:10 | filter: searchval">
-            <td class="pointer" ng-dblclick="openEditCustomerModal(customer.customer_ID)"><i
-                    class="fas fa-user-edit fa-lg text-dark"></i></td>
-            <td>{{ customer.customer_ID }}</td>
-            <td>{{ customer.customer_name }}</td>
-            <td ng-if="customer.customer_phone">{{ customer.customer_phone }}</td>
-            <td ng-if="!customer.customer_phone"> --- </td>
+        <tr dir-paginate="data in customers | itemsPerPage:15 | filter: searchCustomers">
+            <td>{{ data.customer_name }}</td>
+            <td>{{ data.customer_phone || ' --- ' }}</td>
+            <td>{{ data.customer_address || ' --- ' }}</td>
+            <td>{{ data.dollar_debt.toLocaleString() }} $</td>
+            <td>{{ data.lira_debt.toLocaleString() }} L.L</td>
 
-            <td ng-if="customer.customer_address">{{ customer.customer_address }}</td>
-            <td ng-if="!customer.customer_address"> --- </td>
+            <td ng-click="openOffCanvas('edit', data)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
+            <td ng-click="deleteCustomer(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
         </tr>
 
-        <tr class="table-active" ng-if="customers.length === 0">
-            <td colspan="5">No data available in table</td>
+        <tr ng-if="(customers | filter: searchCustomers).length == 0 && searchCustomers">
+            <td colspan="7">No matching records found!</td>
         </tr>
+
     </tbody>
 </table>
 <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
-    template-url="../templates/dirPagination.tpl.html">
+    template-url="templates/dirPagination.tpl.html">
 </dir-pagination-controls>
 </div>
 
-<!-- customer modal -->
-<div class="modal fade" id="customerModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <h4 class="modal-title">{{ modalTitle }}</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-            </div>
-            <form ng-submit="submit()">
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <div class="from-group">
-                        <label>Customer Name</label>
-                        <input spellcheck="false" type="text" class="form-control" ng-model="customerDetails.customer_name" required
-                            autofocus>
-                    </div>
-                    <div class="from-group">
-                        <label>Customer Phone</label>
-                        <input type="text" class="form-control" ng-model="customerDetails.customer_phone" min="0">
-                    </div>
-                    <div class="from-group">
-                        <label>Customer Address</label>
-                        <input type="text" class="form-control" ng-model="customerDetails.customer_address">
-                    </div>
-                </div>
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
-                            class="fas fa-times fa-fw"></i> Cancel</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check fa-fw"></i>
-                        Submit</button>
-                </div>
-            </form>
-        </div>
+<!-- OffCanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="customerOffCanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Modify Customers</h5>
+        <button type="button" class="btn-close btn-close-whites" data-bs-dismiss="offcanvas"></button>
     </div>
+    <form ng-submit="submit()">
+        <div class="offcanvas-body">
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label>Name</label>
+                        <input id="nameInput" type="text" class="form-control" spellcheck="false" ng-model="modalData.customer_name"
+                            required>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Phone</label>
+                        <input type="text" spellcheck="false" class="form-control" ng-model="modalData.customer_phone" required>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Address</label>
+                        <input type="text" class="form-control" spellcheck="false"
+                            ng-model="modalData.customer_address">
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Debt in USD</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="number" step="0.01" class="form-control" ng-model="modalData.dollar_debt">
+                        </div>
+                    </div>
+
+                    <div class="col-6 mb-3">
+                        <label>Debt in LBP</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">L.L</span>
+                            <input type="number" step="0.01" class="form-control" ng-model="modalData.lira_debt">
+                        </div>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Notes</label>
+                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.customer_notes">
+                    </div>
+
+
+                    <div class="col-12 mt-4 text-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas"><i
+                                class="fas fa-times"></i>
+                            Close</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>

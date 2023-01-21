@@ -1,0 +1,171 @@
+<div class="container-fluid row mt-3">
+    <div class="col-4">
+        <table class="table table-bordered table-hover text-center table-sm">
+            <thead>
+                <tr>
+                    <!-- <th></th> -->
+                    <th colspan="2">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input id="searchCustomer" type="search" class="form-control form-control-sm" placeholder="Name ..."
+                                ng-model="searchCustomer.customer_name" spellcheck="false">
+                        </div>
+                    </th>
+                    <th colspan="2">Remaining Debts</th>
+                </tr>
+                <tr>
+                    <th width="7%">#</th>
+                    <th width="45%">Name</th>
+                    <th width="18%">USD</th>
+                    <th width="30%">LBP</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr dir-paginate="data in customers | filter:searchCustomer:strict | orderBy:'lira_debt':true | itemsPerPage:15"
+                    pagination-id="customersTable" ng-click="getCustomerHistory(data)"
+                    ng-class="{'table-active': isActive(data.customer_ID)}">
+                    <td>{{ data.customer_ID }}</td>
+                    <td>{{ data.customer_name }}</td>
+                    <td>{{ data.dollar_debt.toLocaleString() }} $</td>
+                    <td>{{ data.lira_debt.toLocaleString() }} L.L</td>
+                </tr>
+
+                <tr ng-if="customers.length == 0" class="table-active">
+                    <td colspan="4">There are no data available yet!</td>
+                </tr>
+    
+                <tr class="table-active" ng-if="(customers | filter: searchCustomer).length == 0 && searchCustomer">
+                    <td colspan="4">No matching records found!</td>
+                </tr>
+            </tbody>
+        </table>
+        <dir-pagination-controls pagination-id="customersTable" max-size="5" direction-links="true" boundary-links="false"
+            template-url="templates/dirPagination.tpl.html">
+        </dir-pagination-controls>
+    </div>
+
+    <div class="col-8">
+        <div class="card" ng-show="selectedCustomer.customer_ID">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="text-center">
+                    <h5 class="mb-0"><strong>{{ selectedCustomer.customer_name }}</strong></h5>
+                    <small>{{ selectedCustomer.customer_phone }}</small>
+                </div>
+
+                <button ng-click="openPaymentModal('add')" class="btn btn-outline-success"><i
+                        class="fas fa-hand-holding-usd"></i> Receive Payment</button>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-sm text-center table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                    <input type="search" class="form-control form-control-sm" placeholder="Show All"
+                                        id="transactionsDatepicker" ng-model="searchVal.date">
+                                </div>
+                            </th>
+                            <th>
+                                <select class="form-control form-control-sm" ng-model="searchVal.type">
+                                    <option value="">Show All Transactions</option>
+                                    <option value="debt">Debts Transactions</option>
+                                    <option value="payment">Payments Transactions</option>
+                                </select>
+                            </th>
+                            <th>
+                                <select class="form-control form-control-sm" ng-model="searchVal.currency">
+                                    <option value="">Show All Currencies</option>
+                                    <option value="dollar">Dollar</option>
+                                    <option value="lira">Lira</option>
+                                </select>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="35%">Datetime</th>
+                            <th width="40%">Transactions</th>
+                            <th width="25%">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr dir-paginate="data in selectedCustomerHistory | filter:searchVal:strict | itemsPerPage: 10"
+                        pagination-id="details">
+                            <td ng-class="{'text-danger': data.type == 'debt', 'text-success': data.type == 'payment'}">
+                                {{ data.date }} @ {{ data.time }}</td>
+
+                            <td class="text-danger" ng-if="data.type == 'debt'">{{ data.qty }} *
+                                {{ data.item_description }}
+                            </td>
+                            <td class="text-success" ng-if="data.type == 'payment'">Payment Received</td>
+
+
+                            <td ng-class="{'text-danger': data.type == 'debt', 'text-success': data.type == 'payment'}">
+                                {{ data.value.toLocaleString() }}
+                                <span ng-if="data.currency == 'lira'">L.L</span>
+                                <span ng-if="data.currency == 'dollar'">$</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <dir-pagination-controls pagination-id="details" max-size="5" direction-links="true" boundary-links="false"
+                    template-url="templates/dirPagination.tpl.html">
+                </dir-pagination-controls>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Payment</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitPayment()">
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- currency radios -->
+                        <div class="col-6">
+                            <label>Set Payment Currency:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="currency" id="dollarCheck"
+                                    ng-model="modalData.payment_currency" value="dollar">
+                                <label class="form-check-label" for="dollarCheck">
+                                    Dollar
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="currency" id="liraCheck"
+                                    ng-model="modalData.payment_currency" value="lira">
+                                <label class="form-check-label" for="liraCheck">
+                                    LBP
+                                </label>
+                            </div>
+                        </div>
+                        <!-- amount -->
+                        <div class="col-6">
+                            <label>Amount</label>
+                            <div class="input-group">
+                                <span ng-if="modalData.payment_currency == 'lira'" class="input-group-text">L.L</span>
+                                <span ng-if="modalData.payment_currency == 'dollar'" class="input-group-text">$</span>
+                                <input type="number" step="0.01" class="form-control form-control-sm"
+                                    ng-model="modalData.payment_value" required>
+                            </div>
+                        </div>
+                    </div>
+                    <label>Notes</label>
+                    <input type="text" class="form-control" ng-model="modalData.payment_notes" spellcheck="false">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
