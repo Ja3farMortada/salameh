@@ -95,7 +95,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
                 }
             })
 
-        // else if barcode field is empty, thus checkout
+            // else if barcode field is empty, thus checkout
         } else {
             // checkout
             $scope.checkout();
@@ -131,7 +131,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
                 $scope.inputName = null;
                 foundInItems = true;
                 return;
-            } 
+            }
         });
         if (!foundInItems) {
             NotificationService.showErrorText('Item not defined!').then(() => {
@@ -216,41 +216,85 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
     }
 
     // focus barcode if enter or esc or space is pressed
-    Mousetrap.bindGlobal(['enter', 'esc', 'space'], (e) => {
-        if (document.activeElement == document.body) {
-            e.preventDefault()
-            $scope.triggerFocus();
-        }
-    })
-
-    // press up arrow key to select previous input
-    Mousetrap.bindGlobal('up', (e) => {
-        e.preventDefault();
-        // check for focused input
-        let focusedInput = $(':focus');
-        if (focusedInput[0]) {
-            let prevInput = $(focusedInput).closest('tr').prev().find('input');
-            if (prevInput[0]) {
-                $(prevInput).trigger('select');
-            }
-        } else {
-            $scope.triggerFocus()
-        }
-    })
+    // Mousetrap.bindGlobal(['enter', 'esc', 'space'], (e) => {
+    //     if (document.activeElement == document.body) {
+    //         e.preventDefault()
+    //         $scope.triggerFocus();
+    //     }
+    // })
 
     // press down key to select next input
-    Mousetrap.bindGlobal('down', (e) => {
-        e.preventDefault();
-        // check for focused input
-        let focusedInput = $(':focus');
-        if (focusedInput[0]) {
-            let nextInput = $(focusedInput).closest('tr').next().find('input');
-            if (nextInput[0]) {
-                $(nextInput).trigger('select');
-            }
-        } else {
-            $scope.triggerFocus()
+    // Mousetrap.bindGlobal('down', (e) => {
+    //     e.preventDefault();
+    //     // check for focused input
+    //     let focusedInput = $(':focus');
+    //     if (focusedInput[0]) {
+    //         let nextInput = $(focusedInput).closest('tr').next().find('input');
+    //         if (nextInput[0]) {
+    //             $(nextInput).trigger('select');
+    //         }
+    //     } else {
+    //         $scope.triggerFocus()
+    //     }
+    // })
+
+    let focusedInput;
+    document.addEventListener('keydown', e => {
+        switch (e.code) {
+            case 'ArrowUp':
+                e.preventDefault()
+                focusedInput = $(':focus');
+                if (focusedInput[0]) {
+                    let prevInput = $(focusedInput).closest('tr').prev().find('input');
+                    if (prevInput[0]) {
+                        $(prevInput).trigger('select');
+                    }
+                }
+                break;
+
+            case 'ArrowDown':
+                e.preventDefault();
+                focusedInput = $(':focus');
+                if (focusedInput[0]) {
+                    let nextInput = $(focusedInput).closest('tr').next().find('input');
+                    // console.log(nextInput[0]);
+                    // console.log(nextInput[1]);
+                    if (nextInput[0]) {
+                        $(nextInput[0]).trigger('select');
+                    }
+                }
+                break;
+
+            default:
+                if (document.activeElement == document.body) {
+                    e.preventDefault()
+                    $scope.triggerFocus();
+                }
         }
     })
+
+
+    // open edit price modal
+    // priceModal
+    const priceModal = new bootstrap.Modal('#priceModal');
+    $('#priceModal').on('shown.bs.modal', () => {
+        $('#newPrice').trigger('focus');
+    });
+    $('#priceModal').on('hidden.bs.modal', () => {
+        $scope.triggerFocus()
+    })
+    let selectedInvoiceIndex;
+    $scope.openPriceModal = index => {
+        $scope.newPrice = null;
+        selectedInvoiceIndex = index;
+        $scope.dataToEdit = {};
+        angular.copy($scope.invoice[index], $scope.dataToEdit);
+        priceModal.show()
+    }
+
+    $scope.submitNewPrice = () => {
+        $scope.invoice[selectedInvoiceIndex]['unit_price'] = $scope.invoice[selectedInvoiceIndex]['currency'] == 'lira' ? $scope.newPrice : $scope.newPrice / $scope.exchangeRate.setting_value;
+        priceModal.hide();
+    }
 
 });

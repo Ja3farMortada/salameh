@@ -106,6 +106,14 @@
                                 <span ng-if="data.currency == 'dollar'">$</span>
                             </td>
                         </tr>
+
+                        <tr ng-if="selectedCustomerHistory.length == 0">
+                            <td colspan="3">There are no data available yet!</td>
+                        </tr>
+
+                        <tr ng-if="(selectedCustomerHistory | filter: searchVal).length == 0 && searchVal">
+                            <td colspan="3">No Matching Records Found!</td>
+                        </tr>
                     </tbody>
                 </table>
                 <dir-pagination-controls pagination-id="details" max-size="5" direction-links="true" boundary-links="false"

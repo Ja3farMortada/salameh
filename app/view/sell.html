@@ -56,7 +56,7 @@
                     <button class="btn btn-success" ng-click="checkout()"><i class="fas fa-cart-arrow-down"></i>
                         Checkout</button>
                     <button class="btn btn-primary" ng-click="openCustomerModal()"><i class="fas fa-user-pen"></i>
-                        Add To Customer</button>
+                        Add as Debt</button>
                 </div>
                 <div class="col-auto">
                     <h3 class="text-end mt-4 text-danger">Total: {{ totalPrice.toLocaleString() }} L.L</h3>
@@ -68,12 +68,12 @@
         <table class="table table-bordered table-striped text-center table-sm">
             <thead>
                 <tr>
-                    <th width="17%">Barcode</th>
+                    <th width="15%">Barcode</th>
                     <th width="30%">Description</th>
                     <th width="20%">Unit Price</th>
                     <th width="5%">Qty</th>
-                    <th width="23%">Total Price</th>
-                    <th width="5%">Del</th>
+                    <th width="20%">Total Price</th>
+                    <th colspan="2" width="10%">Options</th>
                 </tr>
             </thead>
             <tbody>
@@ -81,10 +81,10 @@
                     <td>{{ data.barcode || ' --- ' }}</td>
                     <td>{{ data.item_description }}</td>
 
-                    <!-- unit price if currency in L.L -->
+                    <!-- unit price -->
                     <td>{{ data.currency == 'lira' ? data.unit_price.toLocaleString() : (data.unit_price * exchangeRate.setting_value).toLocaleString() }}
                         L.L
-                        <small ng-if="data.currency == 'dollar'">({{ data.unit_price }}$)</small>
+                        <small ng-if="data.currency == 'dollar'">({{ data.unit_price.toLocaleString() }}$)</small>
                     </td>
 
                     <!-- qty input -->
@@ -95,12 +95,15 @@
                         </form>
                     </td>
 
-                    <!-- total in L.L -->
+                    <!-- total -->
                     <td>{{ data.currency == 'lira' ? (data.unit_price * data.qty).toLocaleString() : (data.unit_price * data.qty * exchangeRate.setting_value).toLocaleString() }}
                         L.L
                         <small
                             ng-if="data.currency == 'dollar'">({{ (data.unit_price * data.qty).toLocaleString() }}$)</small>
                     </td>
+
+                    <!-- edit price on the go -->
+                    <td ng-click="openPriceModal($index)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
 
                     <!-- delete -->
                     <td ng-click="removeItem($index)" class="danger-hover text-danger"><i
@@ -129,9 +132,9 @@
                     </td>
 
                     <td colspan="3"></td>
-                    <td ng-if="invoice.length > 0" class="danger-hover text-danger" ng-click="clearInvoice()"><i
+                    <td colspan="2" ng-if="invoice.length > 0" class="danger-hover text-danger" ng-click="clearInvoice()"><i
                             class="fas fa-trash-alt"></i></td>
-                    <td ng-if="invoice.length == 0"></td>
+                    <td colspan="2" ng-if="invoice.length == 0"></td>
                 </tr>
             </tbody>
         </table>
@@ -154,6 +157,49 @@
                         <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
                         </option>
                     </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit price modal -->
+<div class="modal fade" id="priceModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Edit Price</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitNewPrice()">
+                <div class="modal-body">
+                    <div class="row text-center">
+                        <!-- cost -->
+                        <div class="col-6">
+                            <label>Selected Item Cost</label>
+                            <br>
+                            <label>{{ dataToEdit.currency == 'lira' ? dataToEdit.unit_cost.toLocaleString() : (dataToEdit.unit_cost * exchangeRate.setting_value).toLocaleString() }}
+                                L.L
+                                <small ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.unit_cost }}$)</small></label>
+                        </div>
+                        <!-- price -->
+                        <div class="col-6">
+                            <label>Selected Item Price</label>
+                            <br>
+                            <label>{{ dataToEdit.currency == 'lira' ? dataToEdit.unit_price.toLocaleString() : (dataToEdit.unit_price * exchangeRate.setting_value).toLocaleString() }}
+                                L.L
+                                <small ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.unit_price }}$)</small></label>
+                        </div>
+                    </div>
+                    <br>
+                    <label>New Price</label>
+                    <input type="number" class="form-control" ng-model="newPrice" id="newPrice" required min="1000">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>

@@ -1,17 +1,31 @@
-<div class="row d-flex justify-content-between">
-    <div class="col-auto">
+<div class="row">
+    <div class="col-5">
         <button class="btn btn-outline-success" ng-click="openOffCanvas('add')">+ Add New Customer +</button>
     </div>
-    <div class="col-4">
-        <div class="input-group">
-            <span class="input-group-text"><i class="fas fa-search"></i></span>
-            <input type="search" class="form-control form-control" placeholder="Search ..." ng-model="searchCustomers"
-                spellcheck="false">
-        </div>
+    <div class="col-auto">
+        <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
+            template-url="templates/dirPagination.tpl.html">
+        </dir-pagination-controls>
     </div>
 </div>
 <table class="table table-bordered table-striped text-center table-sm mt-3">
     <thead>
+        <tr>
+            <th>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="search" class="form-control form-control-sm" placeholder="Name ..."
+                        ng-model="searchVal.customer_name">
+                </div>
+            </th>
+            <th>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="search" class="form-control form-control-sm" placeholder="Phone ..."
+                        ng-model="searchVal.customer_phone">
+                </div>
+            </th>
+        </tr>
         <tr>
             <th width="25%">Name</th>
             <th width="15%">Phone</th>
@@ -22,7 +36,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr dir-paginate="data in customers | itemsPerPage:15 | filter: searchCustomers">
+        <tr dir-paginate="data in customers | filter: searchVal: strict | itemsPerPage:12">
             <td>{{ data.customer_name }}</td>
             <td>{{ data.customer_phone || ' --- ' }}</td>
             <td>{{ data.customer_address || ' --- ' }}</td>
@@ -33,16 +47,12 @@
             <td ng-click="deleteCustomer(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
         </tr>
 
-        <tr ng-if="(customers | filter: searchCustomers).length == 0 && searchCustomers">
+        <tr ng-if="(customers | filter: searchVal).length == 0 && searchVal">
             <td colspan="7">No matching records found!</td>
         </tr>
 
     </tbody>
 </table>
-<dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
-    template-url="templates/dirPagination.tpl.html">
-</dir-pagination-controls>
-</div>
 
 <!-- OffCanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="customerOffCanvas">
@@ -56,13 +66,14 @@
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label>Name</label>
-                        <input id="nameInput" type="text" class="form-control" spellcheck="false" ng-model="modalData.customer_name"
-                            required>
+                        <input id="nameInput" type="text" class="form-control" spellcheck="false"
+                            ng-model="modalData.customer_name" required>
                     </div>
 
                     <div class="col-6 mb-3">
                         <label>Phone</label>
-                        <input type="text" spellcheck="false" class="form-control" ng-model="modalData.customer_phone" required>
+                        <input type="text" spellcheck="false" class="form-control" ng-model="modalData.customer_phone"
+                            required>
                     </div>
 
                     <div class="col-12 mb-3">
