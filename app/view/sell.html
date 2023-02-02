@@ -6,24 +6,24 @@
             <div class="card-header vouchers-card">
                 <ul class="nav nav-tabs nav-fill card-header-tabs">
                     <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Touch'}" class="nav-link"
+                        <a ng-class="{'active': selectedCategory == 'Touch'}" class="nav-link voucher-link"
                             ng-click="setCategory('Touch')"><img src="assets/images/touch.png" height="35px"></a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Alfa'}" class="nav-link"
+                        <a ng-class="{'active': selectedCategory == 'Alfa'}" class="nav-link voucher-link"
                             ng-click="setCategory('Alfa')"><img src="assets/images/alfa.png" height="35px"></a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Internet'}" class="nav-link"
+                        <a ng-class="{'active': selectedCategory == 'Internet'}" class="nav-link voucher-link"
                             ng-click="setCategory('Internet')"><img src="assets/images/internet.png" height="35px"></a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Entertainment'}" class="nav-link"
+                        <a ng-class="{'active': selectedCategory == 'Entertainment'}" class="nav-link voucher-link"
                             ng-click="setCategory('Entertainment')"><img src="assets/images/entertainment.png"
                                 height="35px"></a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Other'}" class="nav-link"
+                        <a ng-class="{'active': selectedCategory == 'Other'}" class="nav-link voucher-link"
                             ng-click="setCategory('Other')"><img src="assets/images/other.jpg" height="35px"></a>
                     </li>
                 </ul>
@@ -33,7 +33,7 @@
                 <h5 class="text-center">{{ selectedCategory }}</h5>
                 <div class="row">
                     <div class="col-3 text-center" ng-repeat="data in vouchers | filter: selectedCategory: strict">
-                        <div ng-click="addVoucher(data)" class="mt-1">
+                        <div class="pointer" ng-mousedown="mouseEvent($event, data)" class="mt-1">
                             <img class="voucher-image" ng-src="http://localhost:3000{{data.image_url}}"
                                 alt="{{ data.item_description }}">
                             <small>{{data.item_name}}</small>
@@ -55,7 +55,7 @@
                 <div class="col-auto">
                     <button class="btn btn-success" ng-click="checkout()"><i class="fas fa-cart-arrow-down"></i>
                         Checkout</button>
-                    <button class="btn btn-primary" ng-click="openCustomerModal()"><i class="fas fa-user-pen"></i>
+                    <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i class="fas fa-user-pen"></i>
                         Add as Debt</button>
                 </div>
                 <div class="col-auto">
@@ -138,11 +138,12 @@
                 </tr>
             </tbody>
         </table>
+        <button class="btn btn-primary" ng-click="openCustomerModal('normal')"><i class="fas fa-user-tag"></i> Add to Customer</button>
     </div>
 
 </div>
 
-<!-- Modal -->
+<!-- choose customer Modal -->
 <div class="modal fade" id="customerModal" tabindex="-1">
     <div class="modal-dialog modal-lgs">
         <div class="modal-content">
@@ -150,7 +151,7 @@
                 <h1 class="modal-title fs-5">Choose Customer</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form ng-submit="checkoutCustomer()">
+            <form ng-submit="submitCustomerModal()">
                 <div class="modal-body">
                     <select id="customer_select" class="form-select" ng-model="selectedCustomer">
                         <option value="">Select Customer:</option>
@@ -210,3 +211,5 @@
         </div>
     </div>
 </div>
+
+<!-- edit voucher price modal -->

@@ -16,6 +16,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
             $scope.selectedCustomer = debtsFactory.selectedCustomer;
             $scope.activeRow = data.customer_ID;
             debtsFactory.activeRow = data.customer_ID;
+            console.log($scope.selectedCustomerHistory);
         })
     }
 
@@ -51,10 +52,12 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
             modalType = 'add';
             $scope.modalData = {
                 customer_ID_FK: $scope.selectedCustomer.customer_ID,
-                payment_currency: 'dollar',
+                payment_account: null,
                 payment_value: null,
-                exchange_rate: rateFactory.exchangeRate.setting_value,
-                payment_notes: null
+                other_currency: false,
+                actual_payment_value: null,
+                payment_notes: null,
+                exchange_rate: rateFactory.exchangeRate.setting_value
             }
             paymentModal.show();
             // console.log($scope.modalData);

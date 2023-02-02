@@ -1,5 +1,13 @@
 app.controller('historyController', function ($scope, historyFactory, rateFactory, DateService) {
 
+
+    //tab selection
+    $scope.selectedTab = historyFactory.selectedTab;
+    $scope.setTab = tab => {
+        historyFactory.setTab(tab);
+        $scope.selectedTab = historyFactory.selectedTab;
+    }
+
     // get logged in user type
     $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
 
@@ -8,6 +16,9 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
 
     // bind invoices with model factory
     $scope.salesInvoices = historyFactory.salesInvoices;
+
+    // payments
+    $scope.paymentsHistory = historyFactory.paymentsHistory;
 
     // set active td in invoices table
     $scope.isActive = ID => {

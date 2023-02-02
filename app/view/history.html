@@ -1,47 +1,73 @@
 <div class="container-fluid">
 
-    <div class="row mt-4">
+    <div class="container">
+        <ul class="nav nav-tabs nav-fill d-flex justify-content-center">
+            <li class="nav-item">
+                <a ng-class="{'active': selectedTab == 'sales'}" class="nav-link history-link"
+                    ng-click="setTab('sales')"><i class="fas fa-receipt fa-lg"></i> SALES</a>
+            </li>
+            <li class="nav-item">
+                <a ng-class="{'active': selectedTab == 'payments'}" class="nav-link history-link"
+                    ng-click="setTab('payments')"><i class="fas fa-file-invoice-dollar fa-lg"></i> PAYMENTS</a>
+            </li>
+        </ul>
+        <br>
+        <div class="row d-flex align-items-center justify-content-center g-2">
+            <label class="col-auto" for="invoiceDatePicker">Date:</label>
+            <div class="col-auto">
+                <input type="text" class="form-control form-control-sm text-center" id="invoiceDatePicker">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-info btn-sm" ng-click="today()">today</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ########################################  TAB 1 ################################## -->
+    <div class="row mt-4" ng-show="selectedTab == 'sales'">
         <!-- invoices tab -->
-        <div class="col-4">
+        <div class="col-5">
             <!-- invoices table -->
             <table class="table table-bordered text-center table-hover table-sm">
                 <thead style="user-select: none">
                     <!-- date input -->
-                    <tr>
-                        <th colspan="4">
+                    <!-- <tr>
+                        <th colspan="5">
                             <div class="row d-flex align-items-center justify-content-center g-2">
                                 <label class="col-auto" for="invoiceDatePicker">Date:</label>
                                 <div class="col-auto">
-                                    <input type="text" class="form-control text-center" id="invoiceDatePicker">
+                                    <input type="text" class="form-control form-control-sm text-center" id="invoiceDatePicker">
                                 </div>
                                 <div class="col-auto">
-                                    <button class="btn btn-info" ng-click="today()">today</button>
+                                    <button class="btn btn-info btn-sm" ng-click="today()">today</button>
                                 </div>
                             </div>
                         </th>
-                    </tr>
+                    </tr> -->
                     <!-- table head -->
                     <tr>
-                        <th width="15%">#</th>
-                        <th width="40%">Customer</th>
-                        <th width="20%">Time</th>
-                        <th width="25%">Total</th>
+                        <th width="10%">#</th>
+                        <th width="35%">Customer</th>
+                        <th width="20%">Type</th>
+                        <th width="15%">Time</th>
+                        <th width="20%">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- sales invoices -->
                     <tr dir-paginate="invoice in salesInvoices | itemsPerPage:10" pagination-id="sales" class="pointers"
                         ng-click="showInvoiceDetails(invoice.invoice_ID, invoice.total_price)"
-                        ng-class="{'table-active': isActive(invoice.invoice_ID)}">
+                        ng-class="{'table-active': isActive(invoice.invoice_ID), 'text-danger': invoice.invoice_type == 'Debt'}">
                         <td>{{ invoice.invoice_ID }}</td>
                         <td>{{ invoice.customer_name || ' --- ' }}</td>
+                        <td>{{ invoice.invoice_type }}</td>
                         <td>{{ invoice.invoice_time }}</td>
                         <td>{{ invoice.total_price.toLocaleString() }} L.L</td>
                     </tr>
 
                     <!-- if no records -->
                     <tr ng-if="salesInvoices.length == 0">
-                        <td colspan="4" class="table-active">No Records Yet!</td>
+                        <td colspan="5" class="table-active">No Records Yet!</td>
                     </tr>
                 </tbody>
             </table>
@@ -51,7 +77,7 @@
         </div>
 
         <!-- invoice details table -->
-        <div class="col-8">
+        <div class="col-7">
 
 
 
@@ -69,8 +95,9 @@
                                     <button disabled class="btn btn-outline-dark btn-sm" ng-click="openPrintModal()"><i
                                             class="fas fa-print"></i>
                                         Print</button>
-                                    <button disabled ng-if="loggedInUser.type ==='admin'" class="btn btn-outline-danger btn-sm"
-                                        ng-click="deleteInvoice()"><i class="fas fa-trash-alt"></i> Delete</button>
+                                    <button disabled ng-if="loggedInUser.type ==='admin'"
+                                        class="btn btn-outline-danger btn-sm" ng-click="deleteInvoice()"><i
+                                            class="fas fa-trash-alt"></i> Delete</button>
                                 </div>
                                 <div class="col-4 text-danger text-end">
                                     <h4 class="m-0">Total: {{ totalPrice.toLocaleString() }} L.L</h4>
@@ -116,5 +143,34 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div ng-show="selectedTab == 'payments'" class="mt-4">
+        <table class="table table-bordereds table-stripeds table-sm text-center">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Datetime</th>
+                    <th>Customer Name</th>
+                    <th>Amount</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody dir-paginate="data in paymentsHistory | itemsPerPage: 15">
+                <td>{{ data.payment_ID }}</td>
+                <td>{{ data.payment_datetime }}</td>
+                <td>{{ data.customer_name }}</td>
+                <td>{{ data.actual_payment_value.toLocaleString() }}
+                    <span ng-show="data.payment_currency == 'lira'">L.L</span>
+                    <span ng-show="data.payment_currency == 'dollar'">$</span>
+                </td>
+                <td ng-if="data.payment_value != data.actual_payment_value">
+                    Payment Received as {{ data.payment_value.toLocaleString() }}
+                    <span ng-if="data.payment_currency == 'dollar'">L.L</span>
+                    <span ng-if="data.payment_currency == 'lira'">$</span>
+                </td>
+                <td ng-if="data.payment_value == data.actual_payment_value"> --- </td>
+            </tbody>
+        </table>
     </div>
 </div>

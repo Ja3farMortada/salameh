@@ -51,27 +51,27 @@
                     </div>
                 </th>
                 <th>
+                    <select class="form-control form-control-sm" ng-model="searchVal.category_name">
+                        <option value="">All</option>
+                        <option ng-repeat="data in categories" value="{{ data.category_name }}">{{ data.category_name }}</option>
+                    </select>
+                </th>
+                <th>
                     <select class="form-control form-control-sm" ng-model="searchVal.currency">
                         <option value="">All</option>
                         <option value="dollar">Dollar</option>
                         <option value="lira">Lira</option>
                     </select>
                 </th>
-                <th>
-                    <select class="form-control form-control-sm" ng-model="searchVal.category_name">
-                        <option value="">All</option>
-                        <option ng-repeat="data in categories" value="{{ data.category_name }}">{{ data.category_name }}</option>
-                    </select>
-                </th>
             </tr>
             <tr>
                 <th width="12%">Barcode</th>
                 <th width="22%">Description</th>
-                <th width="10%">Currency</th>
                 <th width="10%">Category</th>
-                <th width="5%">Qty</th>
+                <th width="10%">Currency</th>
                 <th width="9%">Cost</th>
                 <th width="10%">Price</th>
+                <th width="5%">Qty</th>
                 <th width="12%">Notes</th>
                 <th width="10%" colspan="2">Options</th>
             </tr>
@@ -80,9 +80,8 @@
             <tr dir-paginate="data in items | filter:searchVal:strict | itemsPerPage:itemsPerPage.value">
                 <td>{{ data.barcode || ' --- ' }}</td>
                 <td>{{ data.item_description }}</td>
-                <td>{{ data.currency }}</td>
                 <td>{{ data.category_name }}</td>
-                <td>{{ data.qty }}</td>
+                <td>{{ data.currency }}</td>
 
 
                 <!-- if unit in dollar -->
@@ -92,6 +91,8 @@
                 <!-- if unit in L.L -->
                 <td ng-if="data.currency == 'lira'">{{ (data.item_cost).toLocaleString() || 0 }} L.L</td>
                 <td ng-if="data.currency == 'lira'">{{ (data.item_price).toLocaleString() }} L.L</td>
+
+                <td>{{ data.qty }}</td>
 
                 <td>{{ data.item_notes || ' --- '}}</td>
 

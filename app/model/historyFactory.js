@@ -6,17 +6,19 @@ app.factory('historyFactory', function($http, NotificationService, DateService) 
     var model = {};
     model.datePickerValue = DateService.getDate();
     model.salesInvoices = [];
+    model.paymentsHistory = [];
     model.totalSales = [];
+    model.selectedTab = 'sales';
+
+    model.setTab = tab => {
+        model.selectedTab = tab;
+    }
 
     // get and cache invoices 
     const getSalesInvoices = () => {
-        return $http.get(`${url}/getSalesInvoices`, {
-            params: {
-                "date": model.datePickerValue
-            }
-        }).then(function (response) {
+        $http.get(`${url}/getSalesInvoices/${model.datePickerValue}`).then(response => {
             angular.copy(response.data, model.salesInvoices);
-        }, function (error) {
+        }, error => {
             NotificationService.showError(error);
         });
     };
@@ -24,16 +26,30 @@ app.factory('historyFactory', function($http, NotificationService, DateService) 
 
     // fetch invoices
     model.fetchSalesInvoices = date => {
-        return $http.get(`${url}/getSalesInvoices`, {
-            params: {
-                "date": date
-            }
-        }).then(function (response) {
+        $http.get(`${url}/getSalesInvoices/${date}`).then(response => {
             angular.copy(response.data, model.salesInvoices);
-        }, function (error) {
+        }, error => {
             NotificationService.showError(error);
         });
     };
+
+    // get payments
+    const getPaymentsHistory = () => {
+        $http.get(`${url}/getPaymentsHistory/${model.datePickerValue}`).then(response => {
+            angular.copy(response.data, model.paymentsHistory)
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+    getPaymentsHistory();
+
+    model.fetchPaymentsHistory = date => {
+        $http.get(`${url}/getPaymentsHistory/${date}`).then(response => {
+            angular.copy(response.data, model.paymentsHistory)
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
 
     // delete invoice
     model.deleteInvoice = invoice => {

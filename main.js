@@ -2,11 +2,26 @@ const {
     app,
     BrowserWindow,
     ipcMain,
-    dialog
+    dialog,
+    shell
 } = require('electron')
+
 const path = require('path')
 const fs = require('fs')
+const db = require('./database')
+const moment = require('moment')
+const {
+    machineIdSync
+} = require('node-machine-id')
+const contextMenu = require('electron-context-menu');
 
+contextMenu({
+    showSaveImageAs: false,
+    showSearchWithGoogle: false,
+    showInspectElement: false,
+    showSelectAll: false,
+    showCopyImage: false
+});
 
 // Check if electron is in development mode to enable Node.js on release mode
 
@@ -20,7 +35,7 @@ if (!isDev) {
     node = server.listen(3000, () => console.log(`listening on port ${3000} ...`));
 }
 
-function createWindow() {
+async function createWindow() {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
@@ -32,7 +47,28 @@ function createWindow() {
     win.maximize()
     win.show()
 
-    win.loadFile('app/index.html')
+    let ID = machineIdSync({
+        original: true
+    })
+
+    try {
+        const [status] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
+        if (status[0]['value'] == 'bG9ja2Vk') {
+            win.loadFile('error.html')
+        } else if (status[0]['value'] == 'dW5sb2NrZWQ=') {
+            const [result] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate2'`);
+            let date = Buffer.from(result[0]['value'], 'base64').toString('ascii');
+            let now = moment().format('yyyy-MM-DD');
+            if (date > now) {
+                win.loadFile('app/index.html')
+            } else {
+                await db.execute(`UPDATE settings SET value = 'bG9ja2Vk' WHERE setting_name = 'exchangeRate3'`)
+                win.loadFile('error.html')
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
     // require update module
     const updater = require('./update')

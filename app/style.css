@@ -180,10 +180,23 @@
 }
 
 
-.nav-link.active {
+.voucher-link.active {
     background-color: lightgray;
     color: black !important;
     border-radius: 4px 4px 0 0;
+}
+
+.history-link {
+    color: #000 !important;
+}
+.history-link:hover {
+    background-color: lightgray !important;
+    /* border-bottom: .15rem solid lightgray !important; */
+}
+.history-link.active {
+    background-color: gray !important;
+    color: #fff !important;
+    border-bottom: .15rem solid #ab1e0e !important;
 }
 
 

@@ -1,4 +1,4 @@
-app.factory('debtsFactory', function($http, NotificationService, customersFactory) {
+app.factory('debtsFactory', function($http, NotificationService, customersFactory, historyFactory) {
     // define url
     const url = `http://localhost:3000`;
 
@@ -33,6 +33,7 @@ app.factory('debtsFactory', function($http, NotificationService, customersFactor
             customersFactory.customers[index] = response.data;
             // fetch customer history
             model.getCustomerHistory(response.data)
+            historyFactory.fetchPaymentsHistory(historyFactory.datePickerValue);
             NotificationService.showSuccess();
             return response.data;
         }, error => {

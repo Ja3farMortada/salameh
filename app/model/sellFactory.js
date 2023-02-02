@@ -40,6 +40,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, ma
     model.checkout = data => {
         let invoice = {
             user_ID_FK: mainFactory.loggedInUser.user_ID,
+            invoice_type: 'Sale',
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.setting_value
@@ -57,15 +58,41 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, ma
     }
 
     // checkout with debt
-    model.customerCheckout = (id, data) => {
+    model.checkoutDebt = (id, data) => {
         let invoice = {
-            customer_ID_FK: id,
             user_ID_FK: mainFactory.loggedInUser.user_ID,
+            customer_ID_FK: id,
+            invoice_type: 'Debt',
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.setting_value
         }
-        return $http.post(`${url}/customerCheckout`, {
+        return $http.post(`${url}/checkoutDebt`, {
+            items: data,
+            invoice: invoice
+        }).then(response => {
+            model.clearInvoice();
+            NotificationService.showSuccess();
+            // fetch customers to update debts
+            customersFactory.fetchCustomers();
+            return response;
+        }, error => {
+            console.log(error);
+            NotificationService.showError(error);
+        })
+    }
+
+    // checkout with debt
+    model.checkoutCustomer = (id, data) => {
+        let invoice = {
+            user_ID_FK: mainFactory.loggedInUser.user_ID,
+            customer_ID_FK: id,
+            invoice_type: 'Sale',
+            total_cost: model.total().totalCost,
+            total_price: model.total().totalPrice,
+            exchange_rate: model.exchangeRate.setting_value
+        }
+        return $http.post(`${url}/checkoutCustomer`, {
             items: data,
             invoice: invoice
         }).then(response => {
