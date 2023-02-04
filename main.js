@@ -60,7 +60,7 @@ async function createWindow() {
             let date = Buffer.from(result[0]['value'], 'base64').toString('ascii');
             let now = moment().format('yyyy-MM-DD');
             if (date > now) {
-                if (ID == '9091e364-efbd-4db5-873d-4143a7931661') {
+                if (ID == 'a56de6e9-f11b-42df-8275-1332017907b5') {
                     win.loadFile('app/index.html')
                 } else {
                     win.loadFile('error.html')

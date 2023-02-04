@@ -64,6 +64,7 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
         $scope.items = null;
         $scope.activeRow = null;
         historyFactory.fetchSalesInvoices($scope.datePickerValue);
+        historyFactory.fetchPaymentsHistory($scope.datePickerValue)
     });
 
     // show invoice details 
