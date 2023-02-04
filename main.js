@@ -60,7 +60,11 @@ async function createWindow() {
             let date = Buffer.from(result[0]['value'], 'base64').toString('ascii');
             let now = moment().format('yyyy-MM-DD');
             if (date > now) {
-                win.loadFile('app/index.html')
+                if (ID == '9091e364-efbd-4db5-873d-4143a7931661') {
+                    win.loadFile('app/index.html')
+                } else {
+                    win.loadFile('error.html')
+                }
             } else {
                 await db.execute(`UPDATE settings SET value = 'bG9ja2Vk' WHERE setting_name = 'exchangeRate3'`)
                 win.loadFile('error.html')

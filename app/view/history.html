@@ -1,27 +1,49 @@
 <div class="container-fluid">
 
-    <div class="container">
-        <ul class="nav nav-tabs nav-fill d-flex justify-content-center">
-            <li class="nav-item">
-                <a ng-class="{'active': selectedTab == 'sales'}" class="nav-link history-link"
-                    ng-click="setTab('sales')"><i class="fas fa-receipt fa-lg"></i> SALES</a>
-            </li>
-            <li class="nav-item">
-                <a ng-class="{'active': selectedTab == 'payments'}" class="nav-link history-link"
-                    ng-click="setTab('payments')"><i class="fas fa-file-invoice-dollar fa-lg"></i> PAYMENTS</a>
-            </li>
-        </ul>
-        <br>
-        <div class="row d-flex align-items-center justify-content-center g-2">
-            <label class="col-auto" for="invoiceDatePicker">Date:</label>
-            <div class="col-auto">
-                <input type="text" class="form-control form-control-sm text-center" id="invoiceDatePicker">
+    <div class="row d-flex align-items-center mt-3">
+        <div class="col-4">
+            <div class="row d-flex align-items-center justify-content-center g-2">
+                <label class="col-auto" for="invoiceDatePicker">Date:</label>
+                <div class="col-auto">
+                    <input type="text" class="form-control form-control-lg text-center" id="invoiceDatePicker">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-info btn-lg" ng-click="today()">today</button>
+                </div>
             </div>
-            <div class="col-auto">
-                <button class="btn btn-info btn-sm" ng-click="today()">today</button>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center text-success m-0">{{ (totalSales + totalPaymentsLira).toLocaleString() }} L.L</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="text-center text-success m-0">{{ totalPaymentsDollar.toLocaleString() }} $</h3>
+                </div>
             </div>
         </div>
     </div>
+
+    <br>
+    <hr>
+    <ul class="nav nav-tabs nav-fills d-flex justify-content-center">
+        <li class="nav-item">
+            <a ng-class="{'active': selectedTab == 'sales'}" class="nav-link history-link" ng-click="setTab('sales')"><i
+                    class="fas fa-receipt fa-lg"></i> SALES</a>
+        </li>
+        <li class="nav-item">
+            <a ng-class="{'active': selectedTab == 'payments'}" class="nav-link history-link"
+                ng-click="setTab('payments')"><i class="fas fa-file-invoice-dollar fa-lg"></i> PAYMENTS</a>
+        </li>
+    </ul>
+
+    <!-- <div class="container">
+        
+    </div> -->
 
     <!-- ########################################  TAB 1 ################################## -->
     <div class="row mt-4" ng-show="selectedTab == 'sales'">
@@ -145,8 +167,9 @@
         </div>
     </div>
 
+    <!-- ################## PAYMENTS ######################## -->
     <div ng-show="selectedTab == 'payments'" class="mt-4">
-        <table class="table table-bordereds table-stripeds table-sm text-center">
+        <table class="table table-bordereds table-striped table-sm text-center">
             <thead>
                 <tr>
                     <th>#</th>
@@ -156,21 +179,30 @@
                     <th>Notes</th>
                 </tr>
             </thead>
-            <tbody dir-paginate="data in paymentsHistory | itemsPerPage: 15">
-                <td>{{ data.payment_ID }}</td>
-                <td>{{ data.payment_datetime }}</td>
-                <td>{{ data.customer_name }}</td>
-                <td>{{ data.actual_payment_value.toLocaleString() }}
-                    <span ng-show="data.payment_currency == 'lira'">L.L</span>
-                    <span ng-show="data.payment_currency == 'dollar'">$</span>
-                </td>
-                <td ng-if="data.payment_value != data.actual_payment_value">
-                    Payment Received as {{ data.payment_value.toLocaleString() }}
-                    <span ng-if="data.payment_currency == 'dollar'">L.L</span>
-                    <span ng-if="data.payment_currency == 'lira'">$</span>
-                </td>
-                <td ng-if="data.payment_value == data.actual_payment_value"> --- </td>
+            <tbody>
+                <tr dir-paginate="data in paymentsHistory | itemsPerPage: 15" pagination-id="payments">
+                    <td>{{ data.payment_ID }}</td>
+                    <td>{{ data.payment_datetime }}</td>
+                    <td>{{ data.customer_name }}</td>
+                    <td>{{ data.actual_payment_value.toLocaleString() }}
+                        <span ng-show="data.payment_currency == 'lira'">L.L</span>
+                        <span ng-show="data.payment_currency == 'dollar'">$</span>
+                    </td>
+                    <td ng-if="data.payment_value != data.actual_payment_value">
+                        Payment Received for {{ data.payment_value.toLocaleString() }}
+                        <span ng-if="data.payment_currency == 'dollar'">L.L</span>
+                        <span ng-if="data.payment_currency == 'lira'">$</span>
+                    </td>
+                    <td ng-if="data.payment_value == data.actual_payment_value"> --- </td>
+                </tr>
+
+                <tr ng-if="paymentsHistory.length == 0">
+                    <td colspan="5">There are no payments yet!</td>
+                </tr>
             </tbody>
         </table>
+        <dir-pagination-controls pagination-id="payments" max-size="5" direction-links="true" boundary-links="false"
+            template-url="templates/dirPagination.tpl.html">
+        </dir-pagination-controls>
     </div>
 </div>

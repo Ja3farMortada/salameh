@@ -16,9 +16,18 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
 
     // bind invoices with model factory
     $scope.salesInvoices = historyFactory.salesInvoices;
+    $scope.$watch('salesInvoices', function () {
+        $scope.totalSales = historyFactory.totalSales()
+    }, true)
 
     // payments
     $scope.paymentsHistory = historyFactory.paymentsHistory;
+    let totalPayments;
+    $scope.$watch('paymentsHistory', function () {
+        totalPayments = historyFactory.totalPayments();
+        $scope.totalPaymentsDollar =  totalPayments.totalDollar;
+        $scope.totalPaymentsLira = totalPayments.totalLira;
+    }, true)
 
     // set active td in invoices table
     $scope.isActive = ID => {

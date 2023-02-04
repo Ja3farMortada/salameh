@@ -120,7 +120,7 @@
                             </td>
                             <td class="text-success" ng-show="data.type == 'Payment'">Payment Received <span
                                     ng-if="data.type == 'Payment' && data.unit_cost != data.value">
-                                    <small>(as {{ data.unit_cost.toLocaleString() }}
+                                    <small>(for {{ data.unit_cost.toLocaleString() }}
                                         <span ng-if="data.currency == 'dollar'">L.L</span>
                                         <span ng-if="data.currency == 'lira'">$</span>
                                         )

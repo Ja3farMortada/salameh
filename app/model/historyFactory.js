@@ -65,5 +65,26 @@ app.factory('historyFactory', function($http, NotificationService, DateService) 
         })
     }
 
+
+    // calculate total sales
+    model.totalSales = function () {
+        return this.salesInvoices.reduce(function (memo, invoice) {
+            return invoice.invoice_type == 'Sale' ? invoice.total_price + memo : memo
+        }, 0)
+    }
+
+    // calculate total payments
+    model.totalPayments = function () {
+        return this.paymentsHistory.reduce(function (memo, payment) {
+            return {
+                totalLira: payment.payment_currency == 'lira' ? payment.actual_payment_value + memo.totalLira : memo.totalLira,
+                totalDollar: payment.payment_currency == 'dollar' ? payment.actual_payment_value + memo.totalDollar : memo.totalDollar
+            };
+        }, {
+            totalLira: 0,
+            totalDollar: 0
+        })
+    }
+
     return model;
 })

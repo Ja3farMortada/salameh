@@ -160,6 +160,12 @@
     color: #adb5bd !important;
 }
 
+.nav-link.active {
+    background-color: lightgray;
+    color: black !important;
+    border-radius: 5px;
+}
+
 .navbar-brand {
     color: #F8F9FA !important;
 }
