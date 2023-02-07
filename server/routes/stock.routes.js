@@ -12,18 +12,6 @@ module.exports = (app, db, upload, fs, path) => {
         })
     })
 
-    // getNoBarcodeItems
-    // app.get('/getNoBarcodeItems', (req, res) => {
-    //     let query = `SELECT stock.*, stock_categories.category_name FROM stock INNER JOIN stock_categories ON category_ID_FK = category_ID WHERE item_status = 1 AND item_type = 'other' ORDER BY item_ID DESC`;
-    //     db.query(query, function (error, results) {
-    //         if (error) {
-    //             res.status(400).send(error);
-    //         } else {
-    //             res.send(results)
-    //         }
-    //     })
-    // })
-
     // Add item
     app.post('/addItem', (req, res) => {
         let data = req.body.data;
@@ -32,7 +20,7 @@ module.exports = (app, db, upload, fs, path) => {
             if (error) {
                 res.status(500).send(error);
             } else {
-                db.query(`SELECT * FROM stock WHERE item_ID = ${results.insertId};`, function (error, result) {
+                db.query(`SELECT stock.*, stock_categories.category_name FROM stock INNER JOIN stock_categories ON category_ID_FK = category_ID WHERE stock.item_ID = ${results.insertId};`, function (error, result) {
                     if (error) {
                         res.status(500).send(error);
                     } else {

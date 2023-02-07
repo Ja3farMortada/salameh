@@ -16,6 +16,7 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
 
     // bind invoices with model factory
     $scope.salesInvoices = historyFactory.salesInvoices;
+    // watch for invoices change to calculate total 
     $scope.$watch('salesInvoices', function () {
         $scope.totalSales = historyFactory.totalSales()
     }, true)

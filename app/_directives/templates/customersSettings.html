@@ -47,6 +47,10 @@
             <td ng-click="deleteCustomer(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
         </tr>
 
+        <tr class="table-active" ng-if="customers.length == 0">
+            <td colspan="7">No Customers Yet!</td>
+        </tr>
+
         <tr ng-if="(customers | filter: searchVal).length == 0 && searchVal">
             <td colspan="7">No matching records found!</td>
         </tr>
