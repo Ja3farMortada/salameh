@@ -63,14 +63,4 @@ usersRoutes(app, db, md5);
 vouchersRoutes(app, db, upload, fs, path);
 customersRoutes(app, db);
 
-// const {
-//     machineIdSync
-// } = require('node-machine-id');
-// let ID = machineIdSync({
-//     original: true
-// });
-// fs.writeFile('id.txt', ID, () => {
-//     console.log('done');
-// })
-
 module.exports = app;

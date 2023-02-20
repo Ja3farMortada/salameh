@@ -9,11 +9,15 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
     $scope.customers = customersFactory.customers; // customers
 
 
+    $scope.$on('$viewContentLoaded', () => {
+        $scope.triggerFocus()
+    })
+
     // define and trigger focus on barcode input
-    ($scope.triggerFocus = () => {
+    $scope.triggerFocus = () => {
         $('#barcodeInput').trigger('focus');
         $scope.barcodeInput = null;
-    })();
+    };
 
     // set vouchers -category
     $scope.setCategory = category => {
@@ -339,5 +343,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
         $scope.invoice[selectedInvoiceIndex]['unit_price'] = $scope.invoice[selectedInvoiceIndex]['currency'] == 'lira' ? $scope.newPrice : $scope.newPrice / $scope.exchangeRate.setting_value;
         priceModal.hide();
     }
+
+    $scope.$on('$destroy', () => {
+        document.removeEventListener('keydown')
+    })
 
 });
