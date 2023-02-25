@@ -126,6 +126,55 @@
         </div>
     </nav>
 
+    <div class="modal fade" id="updateModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-sync-alt fa-lg"></i> Updater(beta)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h3 class="text-center">Salameh Cell</h3>
+                    <h6 class="text-center">current version: {{package.version}}</h6>
+
+                    <!-- text -->
+                    <h6 class="text-center mt-3">{{text}}</h6>
+
+                    <!-- spinner -->
+                    <div class="d-flex justify-content-center mt-3" ng-if="showSpinner">
+                        <div class="spinner-grow text-primary" role="status">
+                        </div>
+                    </div>
+
+                    <!-- download update button -->
+                    <button ng-show="download == true" type="button" class="btn btn-outline-dark"
+                        ng-click="downloadUpdate()">download now</button>
+
+                    <!-- download progress -->
+                    <div class="text-center" ng-if="downloading">
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar bg-success" role="progressbar"></div>
+                        </div>
+                        <span>({{((data.transferred)/1000000).toFixed(2)}} MB / {{((data.total)/1000000).toFixed(2)}}
+                            MB)</span>
+                    </div>
+
+                    <!-- install update button -->
+                    <div class="text-center" ng-if="downloaded">
+                        <button class="btn btn-outline-success" ng-click="applyUpdate()">install now</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- check for update button -->
+                    <button ng-show="checked == false" type="button" class="btn btn-success"
+                        ng-click="checkForUpdates()">Check
+                        for Update</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div>
         <div ng-view>
