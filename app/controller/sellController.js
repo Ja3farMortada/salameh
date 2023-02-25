@@ -345,7 +345,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, vo
     }
 
     $scope.$on('$destroy', () => {
-        document.removeEventListener('keydown')
+        document.removeEventListener('keydown', e => {
+            console.log(e);
+        })
     })
 
 });

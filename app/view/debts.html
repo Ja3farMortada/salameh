@@ -15,10 +15,10 @@
                 </tr>
                 <tr>
                     <th width="7%">#</th>
-                    <th width="45%">Name</th>
-                    <th width="18%">USD</th>
+                    <th width="40%">Name</th>
+                    <th width="15%">USD</th>
                     <th width="30%">LBP</th>
-                    <!-- <th>test</th> -->
+                    <th width="8%">Msg</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +29,7 @@
                     <td>{{ data.customer_name }}</td>
                     <td>{{ data.dollar_debt.toLocaleString() }} $</td>
                     <td>{{ data.lira_debt.toLocaleString() }} L.L</td>
+                    <td class="hover-success text-success" ng-click="sendWhatsapp(data)"><i class="fab fa-whatsapp"></i></td>
                     <!-- <td><a href="https://api.whatsapp.com/send?phone=96170846278&message=hi" target="_blank">test</a></td> -->
                 </tr>
 

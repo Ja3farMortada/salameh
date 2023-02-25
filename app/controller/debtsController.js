@@ -16,7 +16,6 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
             $scope.selectedCustomer = debtsFactory.selectedCustomer;
             $scope.activeRow = data.customer_ID;
             debtsFactory.activeRow = data.customer_ID;
-            console.log($scope.selectedCustomerHistory);
         })
     }
 
@@ -60,7 +59,6 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
                 exchange_rate: rateFactory.exchangeRate.setting_value
             }
             paymentModal.show();
-            // console.log($scope.modalData);
         } else {
             modalType = 'edit';
             $scope.modalData = {};
@@ -82,5 +80,10 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
                 })
                 break;
         }
+    }
+
+    $scope.sendWhatsapp = data => {
+        console.log(data);
+        window.electron.send('send-whatsapp', data)
     }
 })

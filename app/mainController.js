@@ -144,5 +144,5 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
     $scope.applyUpdate = function () {
         window.electron.ipcRenderer.send('applyUpdate');
     };
-    console.log(window.electron);
+    
 });
