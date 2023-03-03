@@ -1,228 +1,253 @@
 <div class="container-fluid">
-    <div class="row justify-content-between mb-3 mt-3 select-off">
-        <div class="col-auto">
-            <div class="row align-items-center g-1">
-                <div class="col-auto">
-                    <label>Show</label>
+    <div class="row mt-3">
+        <div class="col-5">
+            <div class="card">
+                <div class="card-header">
+                    <button class="btn btn-success btn-sm float-start" ng-click="opencategoryModal('Add')"><i class="fas fa-plus"></i>
+                        Add Category</button>
+                    <h5 class="mb-0 text-center">Categories</h5>
                 </div>
-                <div class="col-auto">
-                    <select class="form-select mr-1 ml-1" ng-model="itemsPerPage.value"
-                        ng-options="option.value as option.name for option in options">
-                    </select>
+                <div class="card-body">
+
+                    <hr class="mb-0">
+
+                    <!-- table -->
+                    <table class="table table-bordereds text-center table-sm">
+                        <thead>
+                            <tr>
+                                <th width="10%">Sort</th>
+                                <th width="60%">Name</th>
+                                <th colspan="3" width="30%">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody ng-sortable="sortOptions">
+                            <tr ng-class="{'table-success': selectedCategory.category_ID == data.category_ID}"
+                                ng-repeat="data in categories">
+                                <td class="grab-handle pointer"><i class="fas fa-grip-lines"></i></td>
+                                <td>{{ data.category_name }}</td>
+
+                                <td ng-click="selectCategory(data)" class="success-hover text-success"><i
+                                        class="fas fa-plus"></i></td>
+                                <td ng-click="opencategoryModal('Edit', data)" class="info-hover text-info"><i
+                                        class="fas fa-edit"></i></td>
+                                <td ng-click="deleteCategory(data)" class="danger-hover text-danger"><i
+                                        class="fas fa-trash-alt"></i></td>
+                            </tr>
+                            <tr class="table-active" ng-if="categories.length == 0">
+                                <td colspan="5">No Records Yet!</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="col-auto">
-                    <label>entries</label>
-                </div>
-                <!-- <div class="col-auto">
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input pointer" id="currency" ng-model="isLira"
-                            ng-click="toggleCurrency()">
-                        <label class="form-check-label pointer" for="currency">Show in LBP</label>
-                    </div>
-                </div> -->
             </div>
         </div>
-        <div class="col-auto">
-            <button class="btn btn-outline-success" ng-click="openOffCanvas('add')">+ Define New
-                Item +</button>
-        </div>
-        <div class="col-auto">
-            <exchange-rate></exchange-rate>
+        <!-- Items column -->
+        <div class="col-7">
+            <div ng-show="selectedCategory.category_name" class="card">
+                <div class="card-header">
+                    <button class="btn btn-success btn-sm float-start" ng-click="openItemsModal('Add')"><i
+                            class="fas fa-plus"></i>
+                        Add Item</button>
+                    <h5 class="mb-0 text-center">{{ selectedCategory.category_name }}</h5>
+                </div>
+                <div class="card-body">
+
+                    <hr class="mb-0">
+
+                    <table class="table table-striped text-center table-sm">
+                        <thead>
+                            <tr>
+                                <th width="25%">Barcode</th>
+                                <th width="35%">Name</th>
+                                <th width="20%">Price</th>
+                                <th width="20%" colspan="2">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr dir-paginate="data in items | filter:searchVal:true:strict | itemsPerPage: 10"
+                                pagination-id="itemsTable">
+                                <td>{{ data.barcode || ' --- ' }}</td>
+                                <td>{{ data.item_description }}</td>
+                                
+                                <!-- lira -->
+                                <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
+                                <!-- sayrafa -->
+                                <td ng-if="data.currency == 'sayrafa'">{{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }} L.L <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
+                                </td>
+                                <!-- dollar -->
+                                <td ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                </td>
+
+                                <td width="10%" ng-click="openItemsModal('edit', data)" class="info-hover text-info"><i
+                                        class="fas fa-edit"></i></td>
+                                <td ng-click="deleteItem(data)" class="danger-hover text-danger"><i
+                                        class="fas fa-trash-alt"></i></td>
+                            </tr>
+
+                            <tr ng-if="(items | filter: searchVal.category_ID_FK).length == 0 && items"
+                                class="table-active">
+                                <td colspan="5">No Items in Selected Category!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <dir-pagination-controls pagination-id="itemsTable" max-size="5" direction-links="true"
+                        boundary-links="false" template-url="templates/dirPagination.tpl.html">
+                    </dir-pagination-controls>
+                </div>
+            </div>
         </div>
     </div>
-
-    <table class="table table-bordered table-striped text-center table-sm">
-        <thead>
-            <tr>
-                <th>
-                    <form ng-submit="barcodeSearch()">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input id="barcodeSearch" type="search" class="form-control form-control-sm"
-                                placeholder="Barcode ..." ng-model="searchVal.barcode" spellcheck="false">
-                        </div>
-                    </form>
-                </th>
-                <th>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="search" class="form-control form-control-sm" placeholder="Description ..."
-                            ng-model="searchVal.item_description" spellcheck="false">
-                    </div>
-                </th>
-                <th>
-                    <select class="form-control form-control-sm" ng-model="searchVal.category_name">
-                        <option value="">All</option>
-                        <option ng-repeat="data in categories" value="{{ data.category_name }}">{{ data.category_name }}</option>
-                    </select>
-                </th>
-                <th>
-                    <select class="form-control form-control-sm" ng-model="searchVal.currency">
-                        <option value="">All</option>
-                        <option value="dollar">Dollar</option>
-                        <option value="lira">Lira</option>
-                    </select>
-                </th>
-            </tr>
-            <tr>
-                <th width="12%">Barcode</th>
-                <th width="22%">Description</th>
-                <th width="10%">Category</th>
-                <th width="10%">Currency</th>
-                <th width="9%">Cost</th>
-                <th width="10%">Price</th>
-                <th width="5%">Qty</th>
-                <th width="12%">Notes</th>
-                <th width="10%" colspan="2">Options</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr dir-paginate="data in items | filter:searchVal:strict | itemsPerPage:itemsPerPage.value">
-                <td>{{ data.barcode || ' --- ' }}</td>
-                <td>{{ data.item_description }}</td>
-                <td>{{ data.category_name }}</td>
-                <td>{{ data.currency }}</td>
-
-
-                <!-- if unit in dollar -->
-                <td ng-if="data.currency == 'dollar'">{{ (data.item_cost).toLocaleString() || 0 }} $</td>
-                <td ng-if="data.currency == 'dollar'">{{ (data.item_price).toLocaleString() }} $</td>
-
-                <!-- if unit in L.L -->
-                <td ng-if="data.currency == 'lira'">{{ (data.item_cost).toLocaleString() || 0 }} L.L</td>
-                <td ng-if="data.currency == 'lira'">{{ (data.item_price).toLocaleString() }} L.L</td>
-
-                <td>{{ data.qty }}</td>
-
-                <td>{{ data.item_notes || ' --- '}}</td>
-
-                <td ng-click="openOffCanvas('edit', data)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
-                <td ng-click="deleteItem(data)" class="danger-hover text-danger"><i class="fas fa-trash-alt"></i></td>
-            </tr>
-
-            <tr ng-if="items.length == 0" class="table-active">
-                <td colspan="9">There are no data available yet!</td>
-            </tr>
-
-            <tr ng-if="(items | filter: searchVal).length == 0 && searchVal">
-                <td colspan="9">No matching records found!</td>
-            </tr>
-        </tbody>
-    </table>
-    <dir-pagination-controls max-size="5" direction-links="true" boundary-links="false"
-        template-url="templates/dirPagination.tpl.html">
-    </dir-pagination-controls>
 </div>
 
-<!-- OffCanvas -->
-<div class="offcanvas offcanvas-start text-bg-darks" tabindex="-1" id="itemsOffCanvas">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title">Add Item</h5>
-        <button type="button" class="btn-close btn-close-whites" data-bs-dismiss="offcanvas"></button>
-    </div>
-    <form ng-submit="submitOffCanvas()">
-        <div class="offcanvas-body">
-            <div class="mb-3">
-                <div class="row">
-                    <!-- Name -->
-                    <div class="col-6 mb-3">
-                        <label>Name</label>
-                        <input id="descriptionField" type="text" class="form-control" spellcheck="false"
-                            ng-model="modalData.item_description" required>
-                    </div>
 
-                    <!-- Type -->
-                    <div class="col-6 mb-3">
-                        <label>Item Category</label>
-                        <select class="form-select" ng-model="modalData.category_ID_FK" required>
-                            <option value=""> --- </option>
-                            <option ng-repeat="data in categories" ng-value="{{ data.category_ID }}">{{ data.category_name }}</option>
-                        </select>
-                    </div>
-
-                    <div class="col-6">
-                        <label>Type</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="barcode" id="barcode"
-                                ng-model="modalData.item_type" value="barcode">
-                            <label class="form-check-label" for="barcode">
-                                Barcode
-                            </label>
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">{{ modalType }} Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitCategory()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="form-label">Category Name:</label>
+                            <input id="categoryName" type="text" class="form-control" spellcheck="false"
+                                ng-model="modalData.category_name" required>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="noBarcode" id="noBarcode"
-                                ng-model="modalData.item_type" value="other">
-                            <label class="form-check-label" for="noBarcode">
-                                No Barcode
-                            </label>
+
+                        <div class="col-12 mt-3 d-flex justify-content-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="showItem"
+                                    ng-model="modalData.show_on_sell" value="modalData.show_on_sell">
+                                <label class="form-check-label" for="showItem">Show Item on Sell Page?</label>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-12 mb-3" ng-show="modalData.item_type == 'barcode'">
-                        <label>Barcode</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                            <input id="barcodeInput" ng-class="{ 'is-invalid': barcodeExisted }" ng-change="setValid()"
-                                type="text" class="form-control" ng-model="modalData.barcode" spellcheck="false"
-                                ng-required="modalData.item_type == 'barcode'">
-                            <div id="barcodeFeedback" class="invalid-feedback">Barcode already registered!</div>
-                        </div>
-                    </div>
-
-
-                    <div class="col-6 mb-3">
-                        <label>Currency</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="dollarOption" id="dollarOption"
-                                ng-model="modalData.currency" value="dollar">
-                            <label class="form-check-label" for="dollarOption">USD $</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="liraOption" id="liraOption"
-                                ng-model="modalData.currency" value="lira">
-                            <label class="form-check-label" for="liraOption">LBP L.L</label>
-                        </div>
-                    </div>
-
-                    <div class="col-6 mb-3">
-                        <label>Quantity</label>
-                        <input id="descriptionField" type="text" class="form-control" spellcheck="false"
-                            ng-model="modalData.qty" required>
-                    </div>
-
-                    <div class="col-6 mb-3">
-                        <label>Cost</label>
-                        <div class="input-group mb-3">
-                            <span ng-if="modalData.currency == 'lira'" class="input-group-text">L.L</span>
-                            <span ng-if="modalData.currency == 'dollar'" class="input-group-text">$</span>
-                            <input type="number" step="0.01" class="form-control" ng-model="modalData.item_cost">
-                        </div>
-                    </div>
-
-                    <div class="col-6 mb-3">
-                        <label>Price</label>
-                        <div class="input-group mb-3">
-                            <span ng-if="modalData.currency == 'lira'" class="input-group-text">L.L</span>
-                            <span ng-if="modalData.currency == 'dollar'" class="input-group-text">$</span>
-                            <input type="number" step="0.01" class="form-control" ng-model="modalData.item_price"
-                                required>
-                        </div>
-                    </div>
-
-
-                    <div class="col-12 mb-3">
-                        <label>Notes</label>
-                        <input type="text" class="form-control" spellcheck="false" ng-model="modalData.item_notes">
-                    </div>
-
-                    <div class="col-12 mt-4 text-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas"><i
-                                class="fas fa-times"></i>
-                            Close</button>
-                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
                     </div>
                 </div>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+</div>
+
+<!-- Items Modal -->
+<div class="modal fade" id="itemsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">{{ itemsModalType }} Item</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitItem()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Item Name:</label>
+                            <input id="itemName" type="text" class="form-control" spellcheck="false"
+                                ng-model="itemsModal.item_description" required>
+                        </div>
+                        <!-- Type -->
+                        <div class="col-6">
+                            <label>Item Category</label>
+                            <select class="form-select" ng-model="itemsModal.category_ID_FK" required>
+                                <option value=""> --- </option>
+                                <option ng-repeat="data in categories" ng-value="{{ data.category_ID }}">
+                                    {{ data.category_name }}</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="barcode" id="barcode"
+                                    ng-model="itemsModal.item_type" value="barcode">
+                                <label class="form-check-label" for="barcode">
+                                    Barcode
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="noBarcode" id="noBarcode"
+                                    ng-model="itemsModal.item_type" value="other">
+                                <label class="form-check-label" for="noBarcode">
+                                    No Barcode
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 mt-3" ng-show="itemsModal.item_type == 'barcode'">
+                            <label>Barcode</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                <input id="barcodeInput" ng-class="{ 'is-invalid': barcodeExisted }"
+                                    ng-change="setValid()" type="text" class="form-control"
+                                    ng-model="itemsModal.barcode" spellcheck="false"
+                                    ng-required="itemsModal.item_type == 'barcode'">
+                                <div id="barcodeFeedback" class="invalid-feedback">Barcode already registered!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mt-3">
+                            <label>Currency</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="currencyOption" id="sayrafaOption"
+                                    ng-model="itemsModal.currency" value="sayrafa" required>
+                                <label class="form-check-label text-danger" for="sayrafaOption"><strong>Sayrafa</strong></label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="currencyOption" id="liraOption"
+                                    ng-model="itemsModal.currency" value="lira" required>
+                                <label class="form-check-label text-dark" for="liraOption"><strong>Lira L.L</strong></label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="currencyOption" id="dollarOption"
+                                    ng-model="itemsModal.currency" value="dollar" required>
+                                <label class="form-check-label text-success" for="dollarOption"><strong>Fresh $</strong></label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Quantity</label>
+                            <input id="descriptionField" type="text" class="form-control" spellcheck="false"
+                                ng-model="itemsModal.qty" required>
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Cost</label>
+                            <div class="input-group mb-3">
+                                <span ng-if="itemsModal.currency == 'sayrafa'" class="input-group-text text-danger"><strong>$</strong></span>
+                                <span ng-if="itemsModal.currency == 'dollar'" class="input-group-text text-success"><strong>$$</strong></span>
+                                <span ng-if="itemsModal.currency == 'lira'" class="input-group-text text-dark"><strong>L.L</strong></span>
+                                <input type="number" step="0.01" class="form-control" ng-model="itemsModal.item_cost">
+                            </div>
+                        </div>
+
+                        <div class="col-6 mt-3">
+                            <label>Item Price:</label>
+                            <div class="input-group">
+                                <span ng-if="itemsModal.currency == 'sayrafa'" class="input-group-text text-danger"><strong>$</strong></span>
+                                <span ng-if="itemsModal.currency == 'dollar'" class="input-group-text text-success"><strong>$$</strong></span>
+                                <span ng-if="itemsModal.currency == 'lira'" class="input-group-text text-dark"><strong>L.L</strong></span>
+                                <input type="number" step="0.01" class="form-control" ng-model="itemsModal.item_price"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

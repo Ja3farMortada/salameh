@@ -7,13 +7,25 @@ app.directive('exchangeRate', function (rateFactory) {
         },
         link: function (scope) {
 
-            scope.exchangeRate = rateFactory.exchangeRate;
+            rateFactory.exchangeRate.subscribe(res => {
+                scope.exchangeRate = res;
+            })
 
-            scope.updateRate = function () {
-                rateFactory.updateExchangeRate(scope.rate).then(function () {
-                    scope.exchangeRate.setting_value = scope.rate;
-                    scope.rate = null;
-                });
+            const rateModal = new bootstrap.Modal('#rateModal');
+            $('#rateModal').on('shown.bs.modal', () => {
+                $('#rateValue').trigger('focus')
+            })
+
+            scope.openRateModal = () => {
+                scope.modalData = {}
+                angular.copy(scope.exchangeRate, scope.modalData);
+                console.log(scope.modalData);
+                rateModal.show()
+            }
+
+            scope.submitRate = function () {
+                rateFactory.updateExchangeRate(scope.modalData);
+                rateModal.hide()
             };
         }
     }

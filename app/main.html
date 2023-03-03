@@ -29,6 +29,7 @@
     <script src="../node_modules/mousetrap/mousetrap.min.js"></script>
     <script src="../node_modules/mousetrap/plugins/global-bind/mousetrap-global-bind.min.js"></script>
     <script src="../node_modules/@jarstone/dselect/dist/js/dselect.min.js"></script>
+    <script src="../node_modules/rxjs/dist/bundles/rxjs.umd.min.js"></script>
 
     <!-- Load Main Stylesheet -->
     <link rel="stylesheet" href="style.css">
@@ -82,6 +83,9 @@
                     
                 </ul>
                 <div class="ms-auto">
+                    <sayrafa-rate></sayrafa-rate>
+                </div>
+                <div class="ms-2">
                     <exchange-rate></exchange-rate>
                 </div>
 
@@ -202,6 +206,7 @@
 <script src="_directives/js/generalSettings.js"></script>
 <script src="_directives/js/stockSettings.js"></script>
 <script src="_directives/js/rateSettings.js"></script>
+<script src="_directives/js/sayrafaSettings.js"></script>
 <script src="_directives/js/vouchersSettings.js"></script>
 <script src="_directives/js/customersSettings.js"></script>
 
@@ -209,7 +214,11 @@
 <script src="_directives/models/accountFactory.js"></script>
 <script src="_directives/models/generalFactory.js"></script>
 <script src="_directives/models/rateFactory.js"></script>
+<script src="_directives/models/sayrafaFactory.js"></script>
 <script src="_directives/models/vouchersFactory.js"></script>
 <script src="_directives/models/customersFactory.js"></script>
+
+<script src="../node_modules/sortablejs/Sortable.min.js"></script>
+<script src="../node_modules/angular-legacy-sortablejs-maintained/angular-legacy-sortable.js"></script>
 
 </html>

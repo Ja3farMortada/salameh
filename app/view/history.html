@@ -2,25 +2,29 @@
 
     <div class="row d-flex align-items-center mt-3">
         <div class="col-4">
-            <div class="row d-flex align-items-center justify-content-center g-2">
-                <label class="col-auto" for="invoiceDatePicker">Date:</label>
-                <div class="col-auto">
-                    <input type="text" class="form-control form-control-lg text-center" id="invoiceDatePicker">
-                </div>
-                <div class="col-auto">
-                    <button class="btn btn-info btn-lg" ng-click="today()">today</button>
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="card">
+            <div class="card border-left-info">
                 <div class="card-body">
-                    <h3 class="text-center text-success m-0">{{ (totalSales + totalPaymentsLira).toLocaleString() }} L.L</h3>
+                    <div class="row d-flex align-items-center justify-content-center g-2">
+                        <label class="col-auto" for="invoiceDatePicker">Date:</label>
+                        <div class="col-auto">
+                            <input type="text" class="form-control form-control-lg text-center" id="invoiceDatePicker">
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-info btn-lg" ng-click="today()">today</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-4">
-            <div class="card">
+            <div class="card border-left-dark">
+                <div class="card-body">
+                    <h3 class="text-center text-dark m-0">{{ (totalSales + totalPaymentsLira).toLocaleString() }} L.L</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card border-left-success">
                 <div class="card-body">
                     <h3 class="text-center text-success m-0">{{ totalPaymentsDollar.toLocaleString() }} $</h3>
                 </div>
@@ -48,20 +52,6 @@
             <!-- invoices table -->
             <table class="table table-bordered text-center table-hover table-sm">
                 <thead style="user-select: none">
-                    <!-- date input -->
-                    <!-- <tr>
-                        <th colspan="5">
-                            <div class="row d-flex align-items-center justify-content-center g-2">
-                                <label class="col-auto" for="invoiceDatePicker">Date:</label>
-                                <div class="col-auto">
-                                    <input type="text" class="form-control form-control-sm text-center" id="invoiceDatePicker">
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn btn-info btn-sm" ng-click="today()">today</button>
-                                </div>
-                            </div>
-                        </th>
-                    </tr> -->
                     <!-- table head -->
                     <tr>
                         <th width="10%">#</th>
@@ -103,7 +93,7 @@
             <table ng-if="items" class="table table-bordered text-center table-sm select-off">
                 <thead>
                     <tr>
-                        <th colspan="5">
+                        <th colspan="6">
                             <!-- user and total and buttons -->
                             <div ng-if="items" class="row d-flex justify-content-betweens align-items-center g-1">
                                 <div class="col-4" ng-if="user">
@@ -124,10 +114,11 @@
                         </th>
                     </tr>
                     <tr>
-                        <th width="40%">Name</th>
+                        <th width="35%">Name</th>
                         <th width="10%">$ Rate</th>
+                        <th width="10%">Sayrafa</th>
                         <th width="20%">Unit Price</th>
-                        <th width="10%">Qty</th>
+                        <th width="5%">Qty</th>
                         <th width="20%">Total Unit Price</th>
                     </tr>
                 </thead>
@@ -136,26 +127,25 @@
                     <tr ng-repeat="data in items">
                         <td>{{ data.item_description }}</td>
                         <td>{{ data.exchange_rate.toLocaleString() }} L.L</td>
+                        <td>{{ data.sayrafa_rate.toLocaleString() }} L.L</td>
 
-                        <!-- unit price in $ and L.L -->
-                        <td>
-                            {{ data.currency == 'lira' ? data.unit_price.toLocaleString() : (data.unit_price * data.exchange_rate).toLocaleString() }}
-                            L.L
-                            <small ng-if="data.currency == 'dollar'">({{ data.unit_price }}$)</small>
+                        <!-- unit price in L.L -->
+                        <td>{{ data.unit_price.toLocaleString() }} L.L
+                            <small ng-if="data.currency == 'dollar'" class="text-success">({{ data.original_price.toLocaleString() }}$)</small>
+                            <small ng-if="data.currency == 'sayrafa'" class="text-danger">({{ data.original_price.toLocaleString() }}$)</small>
                         </td>
-
+                        
                         <td>{{ data.qty }}</td>
 
                         <!-- total Unit price in $ and L.L -->
-                        <td>{{ data.currency == 'lira' ? (data.unit_price * data.qty).toLocaleString() : (data.unit_price * data.qty * data.exchange_rate).toLocaleString() }}
-                            L.L
-                            <small
-                                ng-if="data.currency == 'dollar'">({{ (data.unit_price * data.qty).toLocaleString() }}$)</small>
+                        <td>{{ (data.unit_price * data.qty).toLocaleString() }} L.L
+                            <small ng-if="data.currency == 'dollar'" class="text-success">({{ (data.original_price * data.qty).toLocaleString() }}$)</small>
+                            <small ng-if="data.currency == 'sayrafa'" class="text-danger">({{ (data.original_price * data.qty).toLocaleString() }}$)</small>
                         </td>
                     </tr>
 
                     <tr class="table-active" ng-if="!items">
-                        <td colspan="4">There is no invoice selected yet</td>
+                        <td colspan="6">There is no invoice selected yet</td>
                     </tr>
 
                 </tbody>

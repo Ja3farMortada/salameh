@@ -3,14 +3,12 @@ app.factory('rateFactory', function ($http, NotificationService) {
     const url = `http://localhost:3000`;
 
     var model = {};
-    model.exchangeRate = {
-        setting_value: 0
-    };
+    model.exchangeRate = new BehaviorSubject({});
 
 
     const getExchangeRate = function () {
         $http.get(`${url}/getExchangeRate`).then(function (response) {
-            angular.copy(response.data, model.exchangeRate);
+            model.exchangeRate.next(response.data)
         }, function (error) {
             NotificationService.showError(error);
         });
@@ -18,9 +16,8 @@ app.factory('rateFactory', function ($http, NotificationService) {
     getExchangeRate();
 
     model.updateExchangeRate = data => {
-        return $http.post(`${url}/updateExchangeRate`, {
-            rate: data
-        }).then(() => {
+        $http.post(`${url}/updateExchangeRate`, data).then(response => {
+            model.exchangeRate.next(response.data)
             NotificationService.showSuccess();
         }, error => {
             NotificationService.showError(error);

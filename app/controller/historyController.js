@@ -1,4 +1,29 @@
-app.controller('historyController', function ($scope, historyFactory, rateFactory, DateService) {
+app.controller('historyController', function ($scope, historyFactory, rateFactory, sayrafaFactory, DateService, mainFactory) {
+
+
+    let userSubscription;
+    let rateSubscription;
+    let sayrafaSubscription;
+    $scope.$on('$viewContentLoaded', () => {
+        userSubscription = mainFactory.loggedInUser.subscribe(res => {
+            $scope.loggedInUser = res;
+        })
+        rateSubscription = rateFactory.exchangeRate.subscribe(res => {
+            $scope.exchangeRate = res;
+        })
+        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
+            $scope.sayrafaRate = res;
+        })
+
+        $scope.salesInvoices = historyFactory.salesInvoices;
+    })
+
+    // on destroy controller
+    $scope.$on('$destroy', () => {
+        userSubscription.unsubscribe();
+        rateSubscription.unsubscribe();
+        sayrafaSubscription.unsubscribe();
+    })
 
 
     //tab selection
@@ -8,14 +33,6 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
         $scope.selectedTab = historyFactory.selectedTab;
     }
 
-    // get logged in user type
-    $scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
-
-    // get exchange rate
-    $scope.exchangeRate = rateFactory.exchangeRate;
-
-    // bind invoices with model factory
-    $scope.salesInvoices = historyFactory.salesInvoices;
     // watch for invoices change to calculate total 
     $scope.$watch('salesInvoices', function () {
         $scope.totalSales = historyFactory.totalSales()

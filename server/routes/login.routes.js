@@ -1,20 +1,22 @@
 module.exports = (app, db) => {
     const md5 = require('md5');
 
-    app.post('/login', (req, res) => {
+    app.post('/login', async (req, res) => {
 
         let query = "SELECT * FROM `users` WHERE `username` = ? AND `password` = ? AND `user_status` = ? ";
-        db.query(query, [req.body.username, md5(req.body.password), true], function (error, results) {
-
-            if (error) {
-                if (error.errno === 'ECONNREFUSED') {
-                    res.status(404).end("MY SQL server is not running");
-                } else {
-                    res.status(400).end('Error in MySQL: ', error);
-                }
-            } else {
+        try {
+            let [[results]] = await db.query(query, [req.body.username, md5(req.body.password), true]);
+            if (results) {
                 res.send(results);
+            } else {
+                throw ('Incorrect Username or Password!')
             }
-        });
+        } catch (e) {
+            if (e.errorno === 'ECONNREFUSED') {
+                res.status(500).send('Database Connection Refused!');
+            } else {
+                res.status(403).send(e);
+            }
+        }
     });
 };

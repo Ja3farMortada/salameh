@@ -2,7 +2,9 @@
     border-left: .25rem solid #007bff !important;
     /* #4e73df */
 }
-
+.border-left-info {
+    border-left: .25rem solid #0dcaf0 !important;
+}
 .border-left-success {
     border-left: .25rem solid #28a745 !important;
 }
@@ -30,6 +32,11 @@
 .badge-fa {
     width: 2.2rem;
     height: 2rem;
+}
+
+.success-hover:hover {
+    background-color: #198754;
+    color: white !important;
 }
 
 .info-hover:hover {
@@ -122,11 +129,6 @@
 .pointer {
     cursor: pointer;
 }
-
-/* a[ng-click] {
-    cursor: pointer;
-    user-select: none;
-} */
 
 [ng-click] {
     cursor: pointer;

@@ -51,7 +51,7 @@
                                     Login</button>
                             </div>
                             <div class="text-center mt-1" ng-cloak>
-                                <small>Salameh Cell v<samp>{{ package.version }}</small>
+                                <small>POS v<samp>{{ package.version }}</small>
                             </div>
                         </form>
                     </div>
@@ -92,10 +92,10 @@
 
         $scope.login = () => {
             $scope.loading = true;
-            $http.post(`${url}/login`, $scope.credentials).then(function (response) {
+            $http.post(`${url}/login`, $scope.credentials).then(response => {
                 if (response.status == 200) {
-                    if (response.data[0]) {
-                        localStorage.setItem('setting', JSON.stringify(response.data[0]));
+                    if (response.data) {
+                        localStorage.setItem('setting', JSON.stringify(response.data));
                         window.location.replace('main.html')
                     } else {
                         NotificationService.playErrorSound();
@@ -106,12 +106,13 @@
                         $('#usernameField').trigger("focus");
                     }
                 }
-            }, function (error) {
+            }, error => {
                 $scope.credentials.username = null;
                 $scope.credentials.password = null;
                 $scope.loading = false;
-                NotificationService.showErrorText(
-                    'Cannot connect to MySQL server, it may be offline');
+                NotificationService.showErrorText(error.data).then(() => {
+                    $('#usernameField').trigger("focus");
+                });
             });
         }
 

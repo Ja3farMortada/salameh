@@ -1,13 +1,19 @@
-app.factory('stockFactory', function($http, NotificationService) {
+app.factory('stockFactory', function ($http, NotificationService) {
 
     // define URL
     const url = `http://localhost:3000`;
 
 
     var model = {};
-    model.items = [];
-    // model.noBarcodeItems = [];
-    model.categories = [];
+    model.categories = new BehaviorSubject([]);
+    model.items = new BehaviorSubject([]);
+    model.searchVal = new BehaviorSubject({
+        category_ID_FK: null
+    })
+
+    model.selectedCategory = new BehaviorSubject({
+        // category_name: null
+    })
 
     model.itemsPerPage = {
         value: 15
@@ -39,54 +45,123 @@ app.factory('stockFactory', function($http, NotificationService) {
     }
 
 
-    // get items
-    const getItems = () => {
-        $http.get(`${url}/getItems`).then(response => {
-            angular.copy(response.data, model.items);
+    // ##################################### CATEGORIES #######################################
+    
+    // Get categories
+    const getCategories = () => {
+        $http.get(`${url}/getCategories`).then(response => {
+            model.categories.next(response.data);
         }, error => {
             NotificationService.showError(error);
         });
     };
-    getItems();
+    getCategories();
 
-    // get items that does not have barcode for datalist
-    // const getNoBarcodeItems = () => {
-    //     $http.get(`${url}/getNoBarcodeItems`).then(response => {
-    //         console.log(response.data);
-    //         angular.copy(response.data, model.noBarcodeItems);
-    //     }, error => {
-    //         NotificationService.showError(error);
-    //     })
-    // }
-    // getNoBarcodeItems();
-    // // fetch above items
-    // model.fetchNoBarcodeItems = () => {
-    //     $http.get(`${url}/getNoBarcodeItems`).then(response => {
-    //         angular.copy(response.data, model.noBarcodeItems);
-    //     }, error => {
-    //         NotificationService.showError(error);
-    //     })
-    // }
+    // fetch categories
+    model.fetchCategories = () => {
+        $http.get(`${url}/getCategories`).then(response => {
+            model.categories.next(response.data);
+        }, error => {
+            NotificationService.showError(error);
+        });
+    }
 
-    // add item
-    model.addItem = data => {
-        return $http.post(`${url}/addItem`, {data, data}).then(response => {
+    // add category
+    model.addCategory = data => {
+        return $http.post(`${url}/addCategory`, {
+            data,
+            data
+        }).then(response => {
             NotificationService.showSuccess();
-            model.items.unshift(response.data);
+            let values = model.categories._value;
+            values.push(response.data);
+            model.categories.next(values);
             return response.data;
         }, error => {
             NotificationService.showError(error);
         })
     }
 
+    // update category
+    model.updateCategory = data => {
+        return $http.post(`${url}/updateCategory`, {
+            data: data
+        }).then(response => {
+            NotificationService.showSuccess();
+            let values = model.categories._value;
+            let index = values.findIndex(x => x.category_ID == response.data.category_ID);
+            values[index] = response.data;
+            model.categories.next(values)
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
+    // // delete category
+    model.deleteCategory = data => {
+        return NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                return $http.post(`${url}/deleteCategory`, {
+                    data: data
+                }).then(response => {
+                    if (response.data == 'deleted') {
+                        let value = model.categories.value;
+                        let index = value.findIndex(x => x.category_ID == data.category_ID);
+                        value.splice(index, 1);
+                        model.categories.next(value)
+                        NotificationService.showSuccess();
+                        return response.data;
+                    }
+                }, error => {
+                    NotificationService.showError(error);
+                })
+            }
+        })
+    }
+
+    // sort categories
+    model.sortCategories = data => {
+        $http.post(`${url}/sortCategories`, data).then(response => {
+
+        }, error => {
+            NotificationService.showError(error);
+        } )
+    }
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ITEMS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    // get items
+    const getItems = () => {
+        $http.get(`${url}/getItems`).then(response => {
+            model.items.next(response.data)
+        }, error => {
+            NotificationService.showError(error);
+        });
+    };
+    getItems();
+
     // check barcode
     model.checkBarcode = data => {
         return $http.post(`${url}/checkBarcode`, {data, data}).then(response => {
             if (response.data.length > 0) return false;
             return true;
-            // return response;
         }, error => {
             NotificationService.showError(error)
+        })
+    }
+
+    // add item
+    model.addItem = data => {
+        return $http.post(`${url}/addItem`, {
+            data,
+            data
+        }).then(response => {
+            NotificationService.showSuccess();
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
         })
     }
 
@@ -96,9 +171,6 @@ app.factory('stockFactory', function($http, NotificationService) {
             data: data
         }).then(response => {
             NotificationService.showSuccess();
-            let index = model.items.findIndex(x => x.item_ID == response.data.item_ID);
-            model.items[index] = response.data;
-            console.log(response.data);
             return response.data;
         }, error => {
             NotificationService.showError(error);
@@ -113,8 +185,10 @@ app.factory('stockFactory', function($http, NotificationService) {
                     data: data
                 }).then(response => {
                     if (response.data == 'deleted') {
-                        let index = model.items.findIndex(x => x.item_ID == data.item_ID);
-                        model.items.splice(index, 1);
+                        let value = model.items.value;
+                        let index = value.findIndex(x => x.item_ID == data.item_ID);
+                        value.splice(index, 1);
+                        model.items.next(value);
                         NotificationService.showSuccess();
                     }
                 }, error => {
@@ -124,68 +198,7 @@ app.factory('stockFactory', function($http, NotificationService) {
         })
     }
 
-    // Get categories
-    const getCategories = () => {
-        $http.get(`${url}/getCategories`).then(function (response) {
-            angular.copy(response.data, model.categories);
-        }, function (error) {
-            NotificationService.showError(error);
-        });
-    };
-    getCategories();
-
-    // fetch categories
-    model.fetchCategories = () => {
-        $http.get(`${url}/getCategories`).then(function (response) {
-            angular.copy(response.data, model.categories);
-        }, function (error) {
-            NotificationService.showError(error);
-        });
-    }
-
-    // add category
-    model.addCategory = data => {
-        return $http.post(`${url}/addCategory`, {data, data}).then(response => {
-            NotificationService.showSuccess();
-            model.categories.push(response.data);
-            return response.data;
-        }, error => {
-            NotificationService.showError(error);
-        })
-    }
-
-    // update category
-    model.updateCategory = data => {
-        return $http.post(`${url}/updateCategory`, {
-            data: data
-        }).then(response => {
-            NotificationService.showSuccess();
-            let index = model.categories.findIndex(x => x.category_ID == response.data.category_ID);
-            model.categories[index] = response.data;
-            return response.data;
-        }, error => {
-            NotificationService.showError(error);
-        })
-    }
-
-    // // delete category
-    model.deleteCategory = data => {
-        NotificationService.showWarning().then(ok => {
-            if (ok.isConfirmed) {
-                $http.post(`${url}/deleteCategory`, {
-                    data: data
-                }).then(response => {
-                    if (response.data == 'deleted') {
-                        let index = model.categories.findIndex(x => x.category_ID == data.category_ID);
-                        model.categories.splice(index, 1);
-                        NotificationService.showSuccess();
-                    }
-                }, error => {
-                    NotificationService.showError(error);
-                })
-            }
-        })
-    }
+    
 
     return model;
 })

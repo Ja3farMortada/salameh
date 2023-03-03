@@ -1,4 +1,5 @@
-const app = angular.module('mainApp', ['angularUtils.directives.dirPagination', 'ngRoute', 'ngFileUpload']);
+const app = angular.module('mainApp', ['angularUtils.directives.dirPagination', 'ngRoute', 'ngFileUpload', 'ng-sortable']);
+const { BehaviorSubject, map } = rxjs;
 
 // Route Providers
 app.config(function ($routeProvider) {
@@ -39,7 +40,9 @@ app.config(function ($routeProvider) {
 app.factory('mainFactory', function () {
     let model = {};
 
-    model.loggedInUser = JSON.parse(localStorage.getItem('setting'));
+    let user = JSON.parse(localStorage.getItem('setting'));
+    
+    model.loggedInUser = new BehaviorSubject(user);
 
     model.getPackages = async () => {
         let response = await window.electron.ipcRenderer.invoke('read-package');

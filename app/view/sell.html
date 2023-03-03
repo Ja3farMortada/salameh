@@ -1,215 +1,159 @@
-<div class="container-fluid row">
+<div class="container-fluid">
+    <div class="row">
+        <!-- invoice section -->
+        <div class="col-7">
 
-    <!-- vouchers section -->
-    <div class="col-4">
-        <div class="card">
-            <div class="card-header vouchers-card">
-                <ul class="nav nav-tabs nav-fill card-header-tabs">
-                    <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Touch'}" class="nav-link voucher-link"
-                            ng-click="setCategory('Touch')"><img src="assets/images/touch.png" height="35px"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Alfa'}" class="nav-link voucher-link"
-                            ng-click="setCategory('Alfa')"><img src="assets/images/alfa.png" height="35px"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Internet'}" class="nav-link voucher-link"
-                            ng-click="setCategory('Internet')"><img src="assets/images/internet.png" height="35px"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Entertainment'}" class="nav-link voucher-link"
-                            ng-click="setCategory('Entertainment')"><img src="assets/images/entertainment.png"
-                                height="35px"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a ng-class="{'active': selectedCategory == 'Other'}" class="nav-link voucher-link"
-                            ng-click="setCategory('Other')"><img src="assets/images/other.jpg" height="35px"></a>
-                    </li>
-                </ul>
-            </div>
-            <!-- ################# vouchers section ####################### -->
-            <div class="card-body">
-                <h5 class="text-center">{{ selectedCategory }}</h5>
-                <div class="row">
-                    <div class="col-3 text-center" ng-repeat="data in vouchers | filter: selectedCategory: strict">
-                        <div class="pointer" ng-mousedown="mouseEvent($event, data)" class="mt-1">
-                            <img class="voucher-image" ng-src="http://localhost:3000{{data.image_url}}"
-                                alt="{{ data.item_description }}">
-                            <small>{{data.item_name}}</small>
+            <!-- invoice table -->
+            <div class="card mt-2">
+                <div class="card-header">
+                    <div class="row d-flex justify-content-between align-items-center">
+                        <div class="col-auto">
+                            <!-- Clear Button -->
+
+                            <button ng-show="!selectedTab && invoice.length > 0" class="btn btn-warning"
+                                ng-click="holdInvoice()"><i class="fas fa-pause"></i> Hold Invoice</button>
+                        </div>
+                        <div class="col-auto">
+                            <h3 class="text-end text-primary">Total: {{ totalPrice.toLocaleString() }} L.L</h3>
                         </div>
                     </div>
-                    <div class="alert alert-dark" role="alert"
-                        ng-if="(vouchers | filter: selectedCategory).length == 0 && selectedCategory">
-                        <strong>No Vouchers Yet!</strong>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-borderlesss table-striped text-center table-sms m-0">
+                        <thead>
+                            <tr>
+                                <th width="35%">Description</th>
+                                <th width="20%">Unit Price</th>
+                                <th width="5%">Qty</th>
+                                <th width="20%">Total Price</th>
+                                <th colspan="2" width="20%">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="data in invoice">
+                                <td>{{ data.item_description }}</td>
+
+                                <!-- unit price lira -->
+                                <td>{{ data.unit_price.toLocaleString() }} L.L
+                                    <span class="text-danger"
+                                        ng-if="data.currency == 'sayrafa'">({{ data.original_price.toLocaleString() }}$)
+                                    </span>
+                                    <span class="text-success"
+                                        ng-if="data.currency == 'dollar'">({{ data.original_price.toLocaleString() }}$)
+                                    </span>
+                                </td>
+
+                                <!-- qty input -->
+                                <td>{{ data.qty }}</td>
+
+                                <!-- total -->
+                                <td>{{ (data.unit_price * data.qty).toLocaleString() }} L.L
+                                    <span class="text-danger"
+                                        ng-if="data.currency == 'sayrafa'">({{ (data.original_price * data.qty).toLocaleString() }}$)
+                                    </span>
+                                    <span class="text-success"
+                                        ng-if="data.currency == 'dollar'">({{ (data.original_price * data.qty).toLocaleString() }}$)
+                                    </span>
+                                </td>
+
+                                <td width="10%" ng-click="substractQty($index)" class="danger-hover text-danger"><i
+                                        class="fas fa-minus fa-lg"></i></td>
+
+                                <!-- edit price on the go -->
+                                <td ng-click="addQty($index)" class="success-hover text-success"><i
+                                        class="fas fa-plus"></i>
+                                </td>
+
+                                <!-- delete -->
+                            </tr>
+
+                            <tr ng-if="invoice.length == 0" class="table-active">
+                                <td colspan="6">No Items Selected Yet!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="card-footer" ng-show="invoice.length > 0">
+                        <!-- checkout and hold buttons -->
+                        <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
+                                class="fas fa-cart-arrow-down"></i>
+                            Checkout</button>
+                        <button ng-show="invoice.length > 0" class="btn btn-secondary" ng-click="clearInvoice()"><i
+                                class="fas fa-times"></i> Clear</button>
+                        <button class="btn btn-primary float-end" ng-click="takeaway()"><i
+                                class="fas fa-motorcycle"></i> Takeaway</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- invoice section -->
-    <div class="col-8">
-        <div class="container">
-            <div class="row d-flex justify-content-between align-items-center">
-                <div class="col-auto">
-                    <button class="btn btn-success" ng-click="checkout()"><i class="fas fa-cart-arrow-down"></i>
-                        Checkout</button>
-                    <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i class="fas fa-user-pen"></i>
-                        Add as Debt</button>
-                </div>
-                <div class="col-auto">
-                    <h3 class="text-end mt-4 text-danger">Total: {{ totalPrice.toLocaleString() }} L.L</h3>
+            <!-- paused invoices tabs -->
+            <div class="row d-flex mt-4">
+                <div class="col-auto" ng-repeat="tab in invoicesOnHold">
+                    <div class="btn-group" role="group">
+                        <button ng-class="{'active': selectedTab == ($index + 1)}"
+                            class="btn btn-outline-success btn-lgs" ng-click="switchHoldedInvoice($index)"><i
+                                class="fas fa-receipt"></i> invoice
+                            {{ tab[0] + 1 }}</button>
+                        <button class="btn btn-outline-danger" ng-click="deleteInvoice($index)"><i
+                                class="fas fa-times"></i></button>
+                    </div>
                 </div>
             </div>
+
+
         </div>
 
-        <!-- invoice table -->
-        <table class="table table-bordered table-striped text-center table-sm">
-            <thead>
-                <tr>
-                    <th width="15%">Barcode</th>
-                    <th width="30%">Description</th>
-                    <th width="20%">Unit Price</th>
-                    <th width="5%">Qty</th>
-                    <th width="20%">Total Price</th>
-                    <th colspan="2" width="10%">Options</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="data in invoice">
-                    <td>{{ data.barcode || ' --- ' }}</td>
-                    <td>{{ data.item_description }}</td>
-
-                    <!-- unit price -->
-                    <td>{{ data.currency == 'lira' ? data.unit_price.toLocaleString() : (data.unit_price * exchangeRate.setting_value).toLocaleString() }}
-                        L.L
-                        <small ng-if="data.currency == 'dollar'">({{ data.unit_price.toLocaleString() }}$)</small>
-                    </td>
-
-                    <!-- qty input -->
-                    <td>
-                        <form ng-submit="triggerFocus()">
-                            <input id="qtyInput{{$index}}" type="number" min="1" max="100"
-                                class="form-control form-control-sm text-center posInput" ng-model="data.qty" required>
-                        </form>
-                    </td>
-
-                    <!-- total -->
-                    <td>{{ data.currency == 'lira' ? (data.unit_price * data.qty).toLocaleString() : (data.unit_price * data.qty * exchangeRate.setting_value).toLocaleString() }}
-                        L.L
-                        <small
-                            ng-if="data.currency == 'dollar'">({{ (data.unit_price * data.qty).toLocaleString() }}$)</small>
-                    </td>
-
-                    <!-- edit price on the go -->
-                    <td ng-click="openPriceModal($index)" class="info-hover text-info"><i class="fas fa-edit"></i></td>
-
-                    <!-- delete -->
-                    <td ng-click="removeItem($index)" class="danger-hover text-danger"><i
-                            class="fas fa-minus fa-lg"></i></td>
-                </tr>
-                <tr>
-                    <!-- Barcode Input -->
-                    <td>
-                        <form ng-submit="submitBarcode()">
-                            <input type="number" min="0" spellcheck="false"
-                                class="form-control form-control-sm posInput" id="barcodeInput" ng-model="barcodeInput"
-                                placeholder="focus to scan barcode ...">
-                        </form>
-                    </td>
-
-                    <!-- name input -->
-                    <td>
-                        <form ng-submit="submitName()">
-                            <input list="itemsList" type="search" class="form-control form-control-sm posInput" id="nameInput" ng-model="inputName"
-                            placeholder="Search no barcoded items ..."
-                            spellcheck="false">
-                            <datalist id="itemsList">
-                                <option value="{{ data.item_description }}" ng-repeat="data in items">{{ data.item_ID }}</option>
-                            </datalist>
-                        </form>
-                    </td>
-
-                    <td colspan="3"></td>
-                    <td colspan="2" ng-if="invoice.length > 0" class="danger-hover text-danger" ng-click="clearInvoice()"><i
-                            class="fas fa-trash-alt"></i></td>
-                    <td colspan="2" ng-if="invoice.length == 0"></td>
-                </tr>
-            </tbody>
-        </table>
-        <button class="btn btn-primary" ng-click="openCustomerModal('normal')"><i class="fas fa-user-tag"></i> Add to Customer</button>
-    </div>
-
-</div>
-
-<!-- choose customer Modal -->
-<div class="modal fade" id="customerModal" tabindex="-1">
-    <div class="modal-dialog modal-lgs">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Choose Customer</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form ng-submit="submitCustomerModal()">
-                <div class="modal-body">
-                    <select id="customer_select" class="form-select" ng-model="selectedCustomer">
-                        <option value="">Select Customer:</option>
-                        <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
-                        </option>
-                    </select>
+        <!-- Categories and Items -->
+        <div class="col-5">
+            <div class="card mt-2">
+                <div class="card-header">
+                    <h5 class="text-center">Categories</h5>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
-                        Close</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-<!-- Edit price modal -->
-<div class="modal fade" id="priceModal" tabindex="-1">
-    <div class="modal-dialog modal-lgs">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5">Edit Price</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form ng-submit="submitNewPrice()">
-                <div class="modal-body">
-                    <div class="row text-center">
-                        <!-- cost -->
-                        <div class="col-6">
-                            <label>Selected Item Cost</label>
-                            <br>
-                            <label>{{ dataToEdit.currency == 'lira' ? dataToEdit.unit_cost.toLocaleString() : (dataToEdit.unit_cost * exchangeRate.setting_value).toLocaleString() }}
-                                L.L
-                                <small ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.unit_cost }}$)</small></label>
-                        </div>
-                        <!-- price -->
-                        <div class="col-6">
-                            <label>Selected Item Price</label>
-                            <br>
-                            <label>{{ dataToEdit.currency == 'lira' ? dataToEdit.unit_price.toLocaleString() : (dataToEdit.unit_price * exchangeRate.setting_value).toLocaleString() }}
-                                L.L
-                                <small ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.unit_price }}$)</small></label>
+                <div class="card-body pt-1 pb-1">
+                    <div class="row">
+                        <div class="col-4 p-1 text-center" ng-repeat="data in categories"
+                            ng-if="data.show_on_sell">
+                            <div ng-class="{'bg-dark text-light': data.category_name == selectedCategory.category_name}"
+                                class="card pointer dark-hover" ng-click="setCategory(data)">
+                                <div class="card-body"><strong>{{ data.category_name }}</strong></div>
+                            </div>
                         </div>
                     </div>
-                    <br>
-                    <label>New Price</label>
-                    <input type="number" class="form-control" ng-model="newPrice" id="newPrice" required min="1000">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
-                        Close</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                <hr class="m-0">
+                <!-- ################# Items section ####################### -->
+                <div class="card-body pt-1">
+                    <h5 class="text-center m-0">{{ selectedCategory.category_name }}</h5>
+                    <div class="row">
+                        <div ng-repeat="data in items | filter:searchVal:true:strict" class="p-1 col-4 mt-2 text-center">
+                            <div class="card pointer dark-hover" ng-mousedown="mouseEvent($event, data)">
+                                <div class="card-body p-1 h6 m-0">{{ data.item_description }}</div>
+                                <div class="card-footer p-1 h6 m-0">
+                                    <!-- lira -->
+                                    <span ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }}
+                                        L.L 
+                                        (LBP)
+                                    </span>
+                                    <!-- sayrafa -->
+                                    <span
+                                        ng-if="data.currency == 'sayrafa'">{{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }}
+                                        L.L 
+                                        <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
+                                    </span>
+                                    <!-- dollar -->
+                                    <span
+                                        ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }}
+                                        L.L 
+                                        <span class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
-</div>
 
-<!-- edit voucher price modal -->
+    </div>
+
+
+</div>

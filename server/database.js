@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 var pool = mysql.createPool({
     connectionLimit: 10,
@@ -10,7 +10,7 @@ var pool = mysql.createPool({
     dateStrings: true
 });
 
-pool.getConnection((err, connection) => {
+pool.getConnection(async (err, connection) => {
     if (err) {
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             console.error('Database connection was closed.');
@@ -22,7 +22,7 @@ pool.getConnection((err, connection) => {
             console.error('Database connection was refused.');
         }
     }
-    if (connection) connection.release();
+    if (connection) await connection.release();
     return;
 });
 

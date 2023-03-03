@@ -13,7 +13,7 @@ app.factory('customersFactory', function ($http, NotificationService) {
             NotificationService.showError(error);
         });
     };
-    getCustomers();
+    // getCustomers();
 
     model.fetchCustomers = () => {
         return $http.get(`${url}/getCustomers`).then(response => {
