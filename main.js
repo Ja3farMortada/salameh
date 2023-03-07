@@ -141,7 +141,8 @@ ipcMain.handle('read-package', function () {
     return data;
 })
 
-ipcMain.handle('send-whatsapp', async function (event,data) {
-    await shell.openExternal(`https://api.whatsapp.com/send?phone=${data.customer_phone}&text=سلام، حسابك بالدولار هو ${data.dollar_debt}`)
-    // await shell.openExternal(`https://wa.me/96181747889?text=Hi Tamtoum, you have settlement to pay:P`)
+ipcMain.handle('send-whatsapp', async function (event, data) {
+    let nl = '%0A';
+    let text = `Salameh Cell${nl}Please settle your debts${nl}Your current balance is:${nl} - Fresh USD: ${data.dollar_debt.toLocaleString()} $ ${nl} - Sayrafa: ${data.sayrafa_debt.toLocaleString()} $ ${nl} - LBP: ${data.lira_debt.toLocaleString()} L.L`
+    await shell.openExternal(`https://api.whatsapp.com/send?phone=${data.customer_phone}&text=${text}`);
 })

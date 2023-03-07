@@ -17,3 +17,7 @@ ALTER TABLE `invoice` ADD `sayrafa_rate` DOUBLE NULL DEFAULT NULL AFTER `exchang
 ALTER TABLE `invoice_map` ADD `sayrafa_rate` DOUBLE NULL DEFAULT NULL AFTER `exchange_rate`;
 
 ALTER TABLE `invoice_map` ADD `original_price` DOUBLE NULL DEFAULT NULL AFTER `unit_price`;
+
+ALTER TABLE `customers_payments` ADD `sayrafa_rate` DOUBLE NULL AFTER `exchange_rate`;
+
+ALTER TABLE `customers` ADD `sayrafa_debt` DOUBLE NOT NULL DEFAULT '0' AFTER `dollar_debt`;

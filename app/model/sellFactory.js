@@ -38,6 +38,17 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
         });
     };
 
+    // get item with barcode
+    model.submitBarcode = barcode => {
+        return $http.post(`${url}/getBarcode`, {
+            data: barcode
+        }).then(response => {
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
     // checkout
     model.checkout = (data, type) => {
         let invoice = {

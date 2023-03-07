@@ -19,7 +19,6 @@ app.directive('exchangeRate', function (rateFactory) {
             scope.openRateModal = () => {
                 scope.modalData = {}
                 angular.copy(scope.exchangeRate, scope.modalData);
-                console.log(scope.modalData);
                 rateModal.show()
             }
 

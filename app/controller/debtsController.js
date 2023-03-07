@@ -1,15 +1,30 @@
-app.controller('debtsController', function ($scope, debtsFactory, customersFactory, rateFactory) {
+app.controller('debtsController', function ($scope, debtsFactory, customersFactory, rateFactory, sayrafaFactory) {
 
-    $scope.customers = customersFactory.customers;
-    $scope.selectedCustomer = debtsFactory.selectedCustomer;
-    $scope.selectedCustomerHistory = debtsFactory.selectedCustomerHistory;
-    $scope.activeRow = debtsFactory.activeRow;
-    $scope.searchCustomer = debtsFactory.searchCustomer;
+    let rateSubscription;
+    let sayrafaSubscription;
+    $scope.$on('$viewContentLoaded', () => {
+        rateSubscription = rateFactory.exchangeRate.subscribe(res => {
+            $scope.exchangeRate = res;
+        })
+        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
+            $scope.sayrafaRate = res;
+        })
 
-    // trigger select for search input for better UX
-    angular.element(document).ready(() => {
+        $scope.customers = customersFactory.customers;
+        $scope.selectedCustomer = debtsFactory.selectedCustomer;
+        $scope.selectedCustomerHistory = debtsFactory.selectedCustomerHistory;
+        $scope.activeRow = debtsFactory.activeRow;
+        $scope.searchCustomer = debtsFactory.searchCustomer;
+
         $('#searchCustomer').trigger('select');
     })
+
+    // on destroy controller
+    $scope.$on('$destroy', () => {
+        rateSubscription.unsubscribe();
+        sayrafaSubscription.unsubscribe();
+    })
+
 
     $scope.getCustomerHistory = data => {
         debtsFactory.getCustomerHistory(data).then(() => {
@@ -23,10 +38,6 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         date: ''
     };
 
-    // set active td in customer's table
-    $scope.isActive = ID => {
-        return $scope.activeRow === ID;
-    };
 
     // define datepicker for filtering
     function datepicker() {
@@ -56,7 +67,8 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
                 other_currency: false,
                 actual_payment_value: null,
                 payment_notes: null,
-                exchange_rate: rateFactory.exchangeRate.setting_value
+                exchange_rate: $scope.exchangeRate.rate_value,
+                sayrafa_rate: $scope.sayrafaRate.rate_value
             }
             paymentModal.show();
         } else {
@@ -82,8 +94,8 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         }
     }
 
-    $scope.sendWhatsapp = data => {
-        console.log(data);
-        window.electron.send('send-whatsapp', data)
+    $scope.sendWhatsapp = () => {
+        console.log($scope.selectedCustomer);
+        window.electron.send('send-whatsapp', $scope.selectedCustomer)
     }
 })

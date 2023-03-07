@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <div class="row">
+    <div class="row g-1">
         <!-- invoice section -->
         <div class="col-7">
 
@@ -22,19 +22,21 @@
                     <table class="table table-borderlesss table-striped text-center table-sms m-0">
                         <thead>
                             <tr>
-                                <th width="35%">Description</th>
+                                <th width="15%">Barcode</th>
+                                <th width="25%">Description</th>
                                 <th width="20%">Unit Price</th>
                                 <th width="5%">Qty</th>
                                 <th width="20%">Total Price</th>
-                                <th colspan="2" width="20%">Options</th>
+                                <th colspan="3" width="15%">Options</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="data in invoice">
-                                <td>{{ data.item_description }}</td>
+                                <td class="p-1">{{ data.barcode || ' --- ' }}</td>
+                                <td class="p-1">{{ data.item_description }}</td>
 
                                 <!-- unit price lira -->
-                                <td>{{ data.unit_price.toLocaleString() }} L.L
+                                <td class="p-1">{{ data.unit_price.toLocaleString() }}
                                     <span class="text-danger"
                                         ng-if="data.currency == 'sayrafa'">({{ data.original_price.toLocaleString() }}$)
                                     </span>
@@ -44,10 +46,10 @@
                                 </td>
 
                                 <!-- qty input -->
-                                <td>{{ data.qty }}</td>
+                                <td class="p-1">{{ data.qty }}</td>
 
                                 <!-- total -->
-                                <td>{{ (data.unit_price * data.qty).toLocaleString() }} L.L
+                                <td class="p-1">{{ (data.unit_price * data.qty).toLocaleString() }}
                                     <span class="text-danger"
                                         ng-if="data.currency == 'sayrafa'">({{ (data.original_price * data.qty).toLocaleString() }}$)
                                     </span>
@@ -56,19 +58,49 @@
                                     </span>
                                 </td>
 
-                                <td width="10%" ng-click="substractQty($index)" class="danger-hover text-danger"><i
+                                <!-- edit price on the go -->
+                                <td width="5%" ng-click="openPriceModal($index)" class="info-hover text-info p-1"><i
+                                        class="fas fa-edit"></i></td>
+
+                                </td>
+                                <!-- substract item -->
+                                <td width="5%" ng-click="substractQty($index)" class="danger-hover text-danger p-1"><i
                                         class="fas fa-minus fa-lg"></i></td>
 
-                                <!-- edit price on the go -->
-                                <td ng-click="addQty($index)" class="success-hover text-success"><i
+                                <!-- add item -->
+                                <td ng-click="addQty($index)" class="success-hover text-success p-1"><i
                                         class="fas fa-plus"></i>
                                 </td>
 
-                                <!-- delete -->
                             </tr>
 
                             <tr ng-if="invoice.length == 0" class="table-active">
-                                <td colspan="6">No Items Selected Yet!</td>
+                                <td colspan="7">No Items Selected Yet!</td>
+                            </tr>
+
+                            <tr>
+                                <!-- Barcode Input -->
+                                <td>
+                                    <form ng-submit="submitBarcode()">
+                                        <input type="text" spellcheck="false"
+                                            class="form-control form-control-sm posInput" id="barcodeInput"
+                                            ng-model="barcodeInput" placeholder="focus to scan barcode ...">
+                                    </form>
+                                </td>
+
+                                <!-- name input -->
+                                <td>
+                                    <form ng-submit="submitName()">
+                                        <input list="itemsList" type="search"
+                                            class="form-control form-control-sm posInput" id="nameInput"
+                                            ng-model="inputName" placeholder="Search no barcoded items ..."
+                                            spellcheck="false">
+                                        <datalist id="itemsList">
+                                            <option value="{{ data.item_description }}" ng-repeat="data in items">
+                                                {{ data.item_ID }}</option>
+                                        </datalist>
+                                    </form>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -79,8 +111,8 @@
                             Checkout</button>
                         <button ng-show="invoice.length > 0" class="btn btn-secondary" ng-click="clearInvoice()"><i
                                 class="fas fa-times"></i> Clear</button>
-                        <button class="btn btn-primary float-end" ng-click="takeaway()"><i
-                                class="fas fa-motorcycle"></i> Takeaway</button>
+                        <!-- <button class="btn btn-primary float-end" ng-click="takeaway()"><i
+                                class="fas fa-motorcycle"></i> Takeaway</button> -->
                     </div>
                 </div>
             </div>
@@ -110,8 +142,7 @@
                 </div>
                 <div class="card-body pt-1 pb-1">
                     <div class="row">
-                        <div class="col-4 p-1 text-center" ng-repeat="data in categories"
-                            ng-if="data.show_on_sell">
+                        <div class="col-4 p-1 text-center" ng-repeat="data in categories" ng-if="data.show_on_sell">
                             <div ng-class="{'bg-dark text-light': data.category_name == selectedCategory.category_name}"
                                 class="card pointer dark-hover" ng-click="setCategory(data)">
                                 <div class="card-body"><strong>{{ data.category_name }}</strong></div>
@@ -124,25 +155,26 @@
                 <div class="card-body pt-1">
                     <h5 class="text-center m-0">{{ selectedCategory.category_name }}</h5>
                     <div class="row">
-                        <div ng-repeat="data in items | filter:searchVal:true:strict" class="p-1 col-4 mt-2 text-center">
+                        <div ng-repeat="data in items | filter:searchVal:true:strict"
+                            class="p-1 col-4 mt-2 text-center">
                             <div class="card pointer dark-hover" ng-mousedown="mouseEvent($event, data)">
                                 <div class="card-body p-1 h6 m-0">{{ data.item_description }}</div>
                                 <div class="card-footer p-1 h6 m-0">
                                     <!-- lira -->
                                     <span ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }}
-                                        L.L 
+                                        L.L
                                         (LBP)
                                     </span>
                                     <!-- sayrafa -->
                                     <span
                                         ng-if="data.currency == 'sayrafa'">{{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }}
-                                        L.L 
+                                        L.L
                                         <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
                                     </span>
                                     <!-- dollar -->
                                     <span
                                         ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }}
-                                        L.L 
+                                        L.L
                                         <span class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
                                     </span>
                                 </div>
@@ -156,4 +188,58 @@
     </div>
 
 
+</div>
+
+
+<!-- Edit price modal -->
+<div class="modal fade" id="priceModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Edit Price</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitNewPrice()">
+                <div class="modal-body">
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <label>Selected Item Price</label>
+                            <br>
+                            <label>{{ dataToEdit.unit_price.toLocaleString() }}
+                                <span class="text-danger"
+                                    ng-if="dataToEdit.currency == 'sayrafa'">({{ dataToEdit.original_price.toLocaleString() }}$)
+                                </span>
+                                <span class="text-success"
+                                    ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.original_price.toLocaleString() }}$)
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div ng-show="priceModalData.original_currency != 'lira'">
+                        <label>Currency</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="currencyOption" id="liraOption"
+                                ng-model="priceModalData.currency" value="lira" ng-required="priceModalData.original_currency != 'lira'">
+                            <label class="form-check-label text-dark" for="liraOption"><strong>LBP L.L</strong></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="currencyOption" id="dollarOption"
+                                ng-model="priceModalData.currency" value="dollar" ng-required="priceModalData.original_currency != 'lira'">
+                            <label class="form-check-label text-success" for="dollarOption"><strong>USD $</strong></label>
+                        </div>
+                    </div>
+
+                    <br>
+                    <label>New Price</label>
+                    <input type="number" step="0.01" class="form-control" ng-model="priceModalData.newPrice" id="newPrice" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>

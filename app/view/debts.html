@@ -11,34 +11,35 @@
                                 placeholder="Name ..." ng-model="searchCustomer.customer_name" spellcheck="false">
                         </div>
                     </th>
-                    <th colspan="2">Remaining Debts</th>
+                    <th colspan="3">Remaining Debts</th>
                 </tr>
                 <tr>
-                    <th width="7%">#</th>
-                    <th width="40%">Name</th>
+                    <th width="5%">#</th>
+                    <th width="35%">Name</th>
                     <th width="15%">USD</th>
+                    <th width="15%">Syrfa</th>
                     <th width="30%">LBP</th>
-                    <th width="8%">Msg</th>
                 </tr>
             </thead>
             <tbody>
                 <tr dir-paginate="data in customers | filter:searchCustomer:strict | orderBy:'lira_debt':true | itemsPerPage:15"
                     pagination-id="customersTable" ng-click="getCustomerHistory(data)"
-                    ng-class="{'table-active': isActive(data.customer_ID)}">
+                    ng-class="{'table-active': data.customer_ID == selectedCustomer.customer_ID}">
                     <td>{{ data.customer_ID }}</td>
                     <td>{{ data.customer_name }}</td>
-                    <td>{{ data.dollar_debt.toLocaleString() }} $</td>
+                    <td class="text-success">{{ data.dollar_debt.toLocaleString() }} $</td>
+                    <td class="text-danger">{{ data.sayrafa_debt.toLocaleString() }} $</td>
                     <td>{{ data.lira_debt.toLocaleString() }} L.L</td>
-                    <td class="hover-success text-success" ng-click="sendWhatsapp(data)"><i class="fab fa-whatsapp"></i></td>
+                    <!-- <td class="hover-success text-success" ng-click="sendWhatsapp(data)"><i class="fab fa-whatsapp"></i></td> -->
                     <!-- <td><a href="https://api.whatsapp.com/send?phone=96170846278&message=hi" target="_blank">test</a></td> -->
                 </tr>
 
                 <tr ng-if="customers.length == 0" class="table-active">
-                    <td colspan="4">There are no data available yet!</td>
+                    <td colspan="5">There are no data available yet!</td>
                 </tr>
 
                 <tr class="table-active" ng-if="(customers | filter: searchCustomer).length == 0 && searchCustomer">
-                    <td colspan="4">No matching records found!</td>
+                    <td colspan="5">No matching records found!</td>
                 </tr>
             </tbody>
         </table>
@@ -54,6 +55,8 @@
                     <h5 class="mb-0"><strong>{{ selectedCustomer.customer_name }}</strong></h5>
                     <small>{{ selectedCustomer.customer_phone }}</small>
                 </div>
+
+                <button class="btn btn-success" ng-click="sendWhatsapp()"><i class="fab fa-whatsapp fa-lg"></i></button>
 
                 <button ng-click="openPaymentModal('add')" class="btn btn-outline-success"><i
                         class="fas fa-hand-holding-usd"></i> Receive Payment</button>

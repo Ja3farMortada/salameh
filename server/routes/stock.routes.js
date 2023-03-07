@@ -2,7 +2,9 @@ module.exports = (app, db, upload, fs, path) => {
 
     // Get items
     app.get('/getItems', async (req, res) => {
-        let query = `SELECT stock.*, stock_categories.category_name FROM stock INNER JOIN stock_categories ON category_ID_FK = category_ID WHERE item_status = 1 ORDER BY item_ID ASC`;
+        let query = `SELECT stock.*, stock_categories.category_name FROM stock
+        INNER JOIN stock_categories ON category_ID_FK = category_ID
+        WHERE item_status = 1 ORDER BY item_ID ASC`;
         try {
             let [results] = await db.query(query);
             res.send(results)
