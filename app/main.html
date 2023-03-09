@@ -57,21 +57,25 @@
                         <a class="nav-link" href="#!/services"><i class="fas fa-money-check"></i> Services</a>
                     </li> -->
                     <li class="nav-item">
-                        <a ng-class="{'active': tabSelected == '/sell'}" class="nav-link" href="#!/sell"><i class="fas fa-shopping-cart"></i> Sell</a>
+                        <a ng-class="{'active': tabSelected == '/sell'}" class="nav-link" href="#!/sell"><i
+                                class="fas fa-shopping-cart"></i> Sell</a>
+                    </li>
+                    <li ng-if="loggedInUser.viewStock == 1" class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/stock'}" class="nav-link" href="#!/stock"><i
+                                class="fas fa-boxes"></i> Stock</a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': tabSelected == '/stock'}" class="nav-link" href="#!/stock"><i class="fas fa-boxes"></i> Stock</a>
-                    </li>
-                    <li class="nav-item">
-                        <a ng-class="{'active': tabSelected == '/history'}" class="nav-link" href="#!/history"><i class="fas fa-history"></i> History</a>
+                        <a ng-class="{'active': tabSelected == '/history'}" class="nav-link" href="#!/history"><i
+                                class="fas fa-history"></i> History</a>
                     </li>
                     <!-- <li class="nav-item">
                         <a class="nav-link" href="#!/customers"><i class="fas fa-users"></i> Customers</a>
                     </li> -->
                     <li class="nav-item">
-                        <a ng-class="{'active': tabSelected == '/debts'}" class="nav-link" href="#!/debts"><i class="fas fa-users"></i> Debts</a>
+                        <a ng-class="{'active': tabSelected == '/debts'}" class="nav-link" href="#!/debts"><i
+                                class="fas fa-users"></i> Debts</a>
                     </li>
-                    <li class="nav-item">
+                    <li ng-if="loggedInUser.viewReports == 1" class="nav-item">
                         <a class="nav-link" href=""><i class="fas fa-chart-line fa-fw"></i> Reports</a>
                     </li>
                     <!-- <li class="nav-item">
@@ -80,7 +84,7 @@
                                 ng-if="remindersCount.length > 0">{{remindersCount.length}}</span></a>
                     </li> -->
 
-                    
+
                 </ul>
                 <div class="ms-auto">
                     <sayrafa-rate></sayrafa-rate>
@@ -96,13 +100,14 @@
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-lg" ng-class="{'fa-sun': theme == 'light', 'fa-moon': theme == 'dark'}"></i>
+                                <i class="fas fa-lg"
+                                    ng-class="{'fa-sun': theme == 'light', 'fa-moon': theme == 'dark'}"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a ng-class="{'active': theme == 'light'}" href="" class="dropdown-item" ng-click="toggleTheme('light')"><i
-                                            class="fas fa-sun fa-lg"></i> Light</a></li>
-                                <li><a ng-class="{'active': theme == 'dark'}" href="" class="dropdown-item" ng-click="toggleTheme('dark')"><i
-                                            class="fas fa-moon fa-lg"></i> Dark</a></li>
+                                <li><a ng-class="{'active': theme == 'light'}" href="" class="dropdown-item"
+                                        ng-click="toggleTheme('light')"><i class="fas fa-sun fa-lg"></i> Light</a></li>
+                                <li><a ng-class="{'active': theme == 'dark'}" href="" class="dropdown-item"
+                                        ng-click="toggleTheme('dark')"><i class="fas fa-moon fa-lg"></i> Dark</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -110,7 +115,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
                                 class="fas fa-user-alt"></i>
-                            admin
+                            {{ loggedInUser.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="#!/settings"><i class="fas fa-cog fa-lg"></i>
@@ -207,7 +212,7 @@
 <script src="_directives/js/stockSettings.js"></script>
 <script src="_directives/js/rateSettings.js"></script>
 <script src="_directives/js/sayrafaSettings.js"></script>
-<script src="_directives/js/vouchersSettings.js"></script>
+<!-- <script src="_directives/js/vouchersSettings.js"></script> -->
 <script src="_directives/js/customersSettings.js"></script>
 
 <!-- Load Directive's Models -->
@@ -215,7 +220,7 @@
 <script src="_directives/models/generalFactory.js"></script>
 <script src="_directives/models/rateFactory.js"></script>
 <script src="_directives/models/sayrafaFactory.js"></script>
-<script src="_directives/models/vouchersFactory.js"></script>
+<!-- <script src="_directives/models/vouchersFactory.js"></script> -->
 <script src="_directives/models/customersFactory.js"></script>
 
 <script src="../node_modules/sortablejs/Sortable.min.js"></script>

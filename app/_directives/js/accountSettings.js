@@ -1,4 +1,4 @@
-app.directive('accountSettings', function (accountFactory) {
+app.directive('accountSettings', function (accountFactory, mainFactory, NotificationService) {
     return {
         restrict: 'E',
         templateUrl: '_directives/templates/accountSettings.html',
@@ -7,7 +7,10 @@ app.directive('accountSettings', function (accountFactory) {
         },
         link: function (scope) {
 
-            scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
+            let userSubscription;
+            userSubscription = mainFactory.loggedInUser.subscribe(res => {
+                scope.loggedInUser = res;
+            })
 
             // bind users to model factory
             scope.users = accountFactory.users;
@@ -24,11 +27,11 @@ app.directive('accountSettings', function (accountFactory) {
             // Prevent spacing in change user modal and add user modal
             $(function () {
                 $('#newUsername').on('keypress', function (e) {
-                    if (e.which == 32)
+                    if (e.keyCode == 32)
                         return false;
                 });
                 $('#createUsername').on('keypress', function (e) {
-                    if (e.which == 32)
+                    if (e.keyCode == 32)
                         return false;
                 });
             });
@@ -38,25 +41,19 @@ app.directive('accountSettings', function (accountFactory) {
                 if (scope.newUsername && scope.newUsername.indexOf(' ') === -1) {
                     var exist = false;
                     for (var i = 0; i < scope.users.length; i++) {
-                        if (scope.users[i]['username'].includes(scope.newUsername)) {
+                        if (scope.users[i]['username'] == scope.newUsername) {
                             exist = true;
-                            swal({
-                                title: 'Error!',
-                                text: 'Username already taken, please choose another one',
-                                icon: 'error'
-                            }).then(() => {
-                                scope.$digest(scope.newUsername = null);
-                                $('#newUsername').focus();
+                            scope.newUsername = null;
+                            NotificationService.showErrorText(`Username already taken, please choose another one`).then(() => {
+                                $('#newUsername').trigger('focus');
                             });
                             break;
                         }
                     }
                     if (exist == false) {
                         accountFactory.editUsername({
-                            ID: scope.loggedInUser.UID,
+                            ID: scope.loggedInUser.user_ID,
                             newUsername: scope.newUsername
-                        }).then(function () {
-                            scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
                         });
                     }
                 }
@@ -66,100 +63,81 @@ app.directive('accountSettings', function (accountFactory) {
             scope.openChangePasswordModal = function () {
                 $('#changePasswordModal').modal('show');
                 $('#changePasswordModal').on('shown.bs.modal', function () {
-                    $(this).find('[autofocus]').focus();
+                    $('#oldPassword').trigger('focus');
                 });
                 scope.oldPassword = null;
                 scope.newPassword = null;
                 scope.confirmPassword = null;
             };
             // Change Password function
-            scope.changePassword = function () {
-                if (md5(scope.oldPassword) === scope.loggedInUser.password) {
-                    if (scope.newPassword === scope.confirmPassword) {
-                        accountFactory.changePassword({
-                            ID: scope.loggedInUser.UID,
-                            password: scope.confirmPassword
-                        }).then(function () {
-                            scope.loggedInUser = JSON.parse(localStorage.getItem('setting'));
-                        });
-                    } else {
-                        swal({
-                            title: "Passwords didn't match!",
-                            text: 'Please check your entries',
-                            icon: 'error'
-                        }).then(() => {
-                            scope.$digest(scope.newPassword = null);
-                            scope.$digest(scope.confirmPassword = null);
-                            $('#newPassword').focus();
-                        })
-                    }
+            scope.changePassword = () => {
+                if (scope.newPassword === scope.confirmPassword) {
+                    accountFactory.changePassword({
+                        ID: scope.loggedInUser.user_ID,
+                        oldPassword: scope.oldPassword,
+                        password: scope.confirmPassword
+                    }).then(res => {
+                        if (res == 'error') {
+                            scope.oldPassword = null
+                            scope.newPassword = null
+                            scope.confirmPassword = null
+                        }
+                    })
                 } else {
-                    swal({
-                        title: 'Incorrect Password!',
-                        text: 'Old password is incorrect, please check your entries',
-                        icon: 'error'
-                    }).then(() => {
-                        scope.$digest(scope.oldPassword = null);
-                        scope.$digest(scope.newPassword = null);
-                        scope.$digest(scope.confirmPassword = null);
-                        $('#oldPassword').focus();
+                    NotificationService.showErrorText(`Password didn't match, Please check your entries!`).then((ok) => {
+                        scope.newPassword = null
+                        scope.confirmPassword = null
+                        scope.$digest()
+                        $('#newPassword').trigger('focus');
                     });
                 }
             };
 
 
-            // Open Add User Modal
-            scope.openAddUserModal = function () {
-                $('#addUserModal').modal('show');
-                $('#addUserModal').on('shown.bs.modal', function () {
-                    $(this).find('[autofocus]').focus();
-                });
-                scope.createUsername = null;
-                scope.createPassword = null;
-                scope.confirmCreatePassword = null;
-                scope.owner = null;
-            };
-            // add User function
-            scope.addUser = function () {
-                if (scope.createUsername.indexOf(' ') === -1) {
-                    if (scope.createPassword === scope.confirmCreatePassword) {
-                        accountFactory.addUser({
-                            username: scope.createUsername,
-                            password: scope.createPassword,
-                            owner: scope.owner
-                        });
-                    } else {
-                        swal({
-                            title: "Passwords didn't match!",
-                            text: 'Please check your entries',
-                            icon: 'error'
-                        }).then(() => {
-                            scope.$digest(scope.createPassword = null);
-                            scope.$digest(scope.confirmCreatePassword = null);
-                            $('#createPassword').focus();
-                        });
+            // ############################################## Users Section #########################################
+            $('#userModal').on('shown.bs.modal', function () {
+                $('#userUsername').trigger('focus');
+            });
+            scope.openUserModal = (type, data) => {
+                if (type == 'add') {
+                    scope.userModalType = 'Add'
+                    scope.userModalData = {
+                        username: null,
+                        password: null,
+                        confirmPassword: null,
+                        owner: null
                     }
+                    $('#userModal').modal('show');
+                } else {
+                    scope.userModalType = 'Edit'
+                    scope.userModalData = {};
+                    angular.copy(data, scope.userModalData);
+                    $('#userModal').modal('show');
                 }
-            };
+            }
 
-            // open edit user modal
-            scope.openEditUserModal = function (index) {
-                $('#editUserModal').modal('show');
-                $('#editUserModal').on('shown.bs.modal', function () {
-                    $(this).find('[autofocus]').focus();
-                });
-                scope.selectedUserID = scope.users[index]['UID'];
-                scope.editUsername = scope.users[index]['username'];
-                scope.editOwner = scope.users[index]['owner'];
-            };
-            // Update function
-            scope.editUser = function () {
-                accountFactory.editUser({
-                    ID: scope.selectedUserID,
-                    username: scope.editUsername,
-                    owner: scope.editOwner
-                });
-            };
+            scope.submitUser = () => {
+                switch (scope.userModalType) {
+                    case 'Add':
+                        // add user
+                        if (scope.userModalData.password == scope.userModalData.confirmPassword) {
+                            accountFactory.addUser(scope.userModalData)
+                        } else {
+                            NotificationService.showErrorText(`Passwords didn't match!`).then(ok => {
+                                scope.$digest(scope.userModalData.password = null);
+                                scope.$digest(scope.userModalData.confirmPassword = null);
+                                $('#userPassword').trigger('focus');
+                            })
+                        }
+                        break;
+
+                    case 'Edit':
+                        // edit user
+                        accountFactory.editUser(scope.userModalData)
+                        break;
+                }
+            }
+
             // Delete function
             scope.deleteUser = function () {
                 swal({
@@ -177,59 +155,35 @@ app.directive('accountSettings', function (accountFactory) {
             };
 
             // Open Permissions Modal
-            scope.openPermissionsModal = function (index) {
+            scope.openPermissionsModal = user => {
+                scope.selectedUser = {};
+                user.viewStock = user.viewStock == 1 ? true : false;
+                user.viewReports = user.viewReports == 1 ? true : false;
+                user.deleteInvoice = user.deleteInvoice == 1 ? true : false;
+                user.modifyCustomers = user.modifyCustomers == 1 ? true : false;
+                angular.copy(user, scope.selectedUser);
                 $('#permissionsModal').modal('show');
-                scope.selectedUser = scope.users[index];
-                scope.options = [{
-                        value: 0,
-                        syntax: 'No'
-                    },
-                    {
-                        value: 1,
-                        syntax: 'Yes'
-                    }
-                ];
-                scope.selectedUserID = scope.selectedUser.UID;
-                scope.canAddService = scope.options[scope.selectedUser.canAddService]['value'];
-                scope.canAddItem = scope.options[scope.selectedUser.canAddItem]['value'];
-                scope.canViewCustomers = scope.options[scope.selectedUser.canViewCustomers]['value'];
-                scope.canViewPayments = scope.options[scope.selectedUser.canViewPayments]['value'];
             };
             // update permissions function
-            scope.updatePermissions = function () {
-                swal({
-                    title: 'Changing Permissions!',
-                    text: 'Are you sure you want to change permissions?',
-                    buttons: true,
-                    dangerMode: true
-                }).then((ok) => {
-                    if (ok) {
-                        accountFactory.updatePermissions({
-                            ID: scope.selectedUserID,
-                            canAddService: scope.canAddService,
-                            canAddItem: scope.canAddItem,
-                            canViewCustomers: scope.canViewCustomers,
-                            canViewPayments: scope.canViewPayments
-                        });
-                    }
-                });
+            scope.updatePermissions = () => {
+                accountFactory.updatePermissions(scope.selectedUser);
             };
 
             // Disable user function
-            scope.updateUserStatus = function (ID, username) {
-                swal({
-                    buttons: true,
-                    title: 'Attention!',
-                    text: `Are You sure you want to update ${username} status?`,
-                    dangerMode: true
-                }).then((ok) => {
-                    if (ok) {
-                        accountFactory.updateUserStatus({
-                            UID: ID
-                        });
-                    }
-                });
-            };
+            // scope.updateUserStatus = function (ID, username) {
+            //     swal({
+            //         buttons: true,
+            //         title: 'Attention!',
+            //         text: `Are You sure you want to update ${username} status?`,
+            //         dangerMode: true
+            //     }).then((ok) => {
+            //         if (ok) {
+            //             accountFactory.updateUserStatus({
+            //                 UID: ID
+            //             });
+            //         }
+            //     });
+            // };
 
         }
     }

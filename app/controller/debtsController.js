@@ -13,7 +13,6 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         $scope.customers = customersFactory.customers;
         $scope.selectedCustomer = debtsFactory.selectedCustomer;
         $scope.selectedCustomerHistory = debtsFactory.selectedCustomerHistory;
-        $scope.activeRow = debtsFactory.activeRow;
         $scope.searchCustomer = debtsFactory.searchCustomer;
 
         $('#searchCustomer').trigger('select');
@@ -29,8 +28,6 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     $scope.getCustomerHistory = data => {
         debtsFactory.getCustomerHistory(data).then(() => {
             $scope.selectedCustomer = debtsFactory.selectedCustomer;
-            $scope.activeRow = data.customer_ID;
-            debtsFactory.activeRow = data.customer_ID;
         })
     }
 
@@ -63,8 +60,8 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
             $scope.modalData = {
                 customer_ID_FK: $scope.selectedCustomer.customer_ID,
                 payment_account: null,
+                payment_currency: false,
                 payment_value: null,
-                other_currency: false,
                 actual_payment_value: null,
                 payment_notes: null,
                 exchange_rate: $scope.exchangeRate.rate_value,
@@ -95,7 +92,9 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     }
 
     $scope.sendWhatsapp = () => {
-        console.log($scope.selectedCustomer);
-        window.electron.send('send-whatsapp', $scope.selectedCustomer)
+        let data = $scope.selectedCustomer;
+        let nl = `%0A`;
+        let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- Sayrafa: ${data.sayrafa_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
+        window.electron.send('send-whatsapp', [data.customer_phone, text])
     }
 })

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 02, 2023 at 06:47 PM
--- Server version: 8.0.30
--- PHP Version: 8.0.12
+-- Generation Time: Mar 09, 2023 at 11:08 PM
+-- Server version: 8.0.26
+-- PHP Version: 7.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,9 +33,18 @@ CREATE TABLE `customers` (
   `customer_phone` varchar(15) DEFAULT NULL,
   `customer_address` varchar(100) DEFAULT NULL,
   `dollar_debt` double NOT NULL DEFAULT '0',
+  `sayrafa_debt` double NOT NULL DEFAULT '0',
   `lira_debt` double NOT NULL DEFAULT '0',
   `customer_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `customers`
+--
+
+INSERT INTO `customers` (`customer_ID`, `customer_name`, `customer_phone`, `customer_address`, `dollar_debt`, `sayrafa_debt`, `lira_debt`, `customer_status`) VALUES
+(1, 'hadi', '96170856584', 'test', 800, 45, 900000, 1),
+(2, 'test 2', '9613568548', NULL, 620, 50, 900000, 1);
 
 -- --------------------------------------------------------
 
@@ -52,9 +61,26 @@ CREATE TABLE `customers_payments` (
   `payment_value` double NOT NULL,
   `actual_payment_value` double DEFAULT NULL,
   `exchange_rate` double NOT NULL,
+  `sayrafa_rate` double DEFAULT NULL,
   `payment_notes` varchar(100) DEFAULT NULL,
   `payment_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `customers_payments`
+--
+
+INSERT INTO `customers_payments` (`payment_ID`, `customer_ID_FK`, `payment_datetime`, `payment_account`, `payment_currency`, `payment_value`, `actual_payment_value`, `exchange_rate`, `sayrafa_rate`, `payment_notes`, `payment_status`) VALUES
+(1, 1, '2023-03-09 17:23:28', 'sayrafa', 'lira', 20, 1400000, 80000, 70000, NULL, 1),
+(2, 2, '2023-03-09 18:43:48', 'dollar', 'lira', 100, 8000000, 80000, 70000, NULL, 1),
+(3, 2, '2023-03-09 18:45:55', 'sayrafa', 'dollar', 5, 3, 80000, 70000, NULL, 1),
+(4, 2, '2023-03-09 19:33:51', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
+(5, 2, '2023-03-09 21:49:56', 'sayrafa', 'lira', 15, 1050000, 80000, 70000, NULL, 1),
+(6, 2, '2023-03-09 21:56:09', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
+(7, 2, '2023-03-09 22:06:42', 'sayrafa', 'lira', 10, 700000, 80000, 70000, NULL, 1),
+(8, 2, '2023-03-09 22:12:25', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
+(9, 1, '2023-03-09 22:12:50', 'dollar', 'dollar', 80, 80, 80000, 70000, NULL, 1),
+(10, 1, '2023-03-09 22:13:32', 'sayrafa', 'dollar', 5, 4.5, 80000, 70000, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -90,8 +116,37 @@ CREATE TABLE `invoice` (
   `total_cost` double NOT NULL,
   `total_price` double NOT NULL,
   `exchange_rate` double NOT NULL DEFAULT '0',
+  `sayrafa_rate` double DEFAULT NULL,
   `invoice_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `invoice`
+--
+
+INSERT INTO `invoice` (`invoice_ID`, `user_ID_FK`, `customer_ID_FK`, `invoice_type`, `invoice_datetime`, `total_cost`, `total_price`, `exchange_rate`, `sayrafa_rate`, `invoice_status`) VALUES
+(1, 1, 2, 'Debt', '2023-03-09 18:25:13', 225102, 16650000, 0, NULL, 1),
+(2, 1, 2, 'Sale', '2023-03-09 18:47:21', 10, 1600000, 0, NULL, 1),
+(3, 1, 2, 'Debt', '2023-03-09 20:24:52', 5, 700000, 0, NULL, 1),
+(4, 1, 1, 'Debt', '2023-03-09 20:28:26', 225020, 2600000, 0, NULL, 1),
+(5, 1, 1, 'Debt', '2023-03-09 20:36:31', 104, 16700000, 0, 70000, 1),
+(6, 1, 2, 'Debt', '2023-03-09 20:37:33', 15, 2100000, 0, 70000, 1),
+(7, 1, 2, 'Debt', '2023-03-09 20:39:18', 17, 1950000, 0, 70000, 1),
+(8, 1, 1, 'Debt', '2023-03-09 21:06:36', 17, 1950000, 0, 70000, 1),
+(9, 1, 2, 'Debt', '2023-03-09 21:09:55', 225015, 1900000, 0, 70000, 1),
+(10, 1, 1, 'Debt', '2023-03-09 21:10:11', 102, 16350000, 0, 70000, 1),
+(11, 1, 1, 'Debt', '2023-03-09 21:10:30', 225015, 1900000, 0, 70000, 1),
+(12, 1, 2, 'Debt', '2023-03-09 21:13:14', 225002, 650000, 0, 70000, 1),
+(13, 1, 2, 'Debt', '2023-03-09 21:14:07', 102, 16350000, 0, 70000, 1),
+(14, 1, 1, 'Debt', '2023-03-09 21:15:07', 17, 1950000, 0, 70000, 1),
+(15, 1, 1, 'Debt', '2023-03-09 21:21:45', 102, 16350000, 0, 70000, 1),
+(16, 1, 2, 'Debt', '2023-03-09 21:22:40', 17, 1950000, 0, 70000, 1),
+(17, 1, 2, 'Debt', '2023-03-09 21:23:46', 225032, 3850000, 0, 70000, 1),
+(18, 1, 1, 'Debt', '2023-03-09 22:14:18', 102, 16350000, 0, 70000, 1),
+(19, 1, 1, 'Sale', '2023-03-09 22:15:04', 15, 1600000, 0, 70000, 1),
+(20, 1, 2, 'Debt', '2023-03-09 22:15:10', 15, 1600000, 0, 70000, 1),
+(21, 1, 2, 'Debt', '2023-03-09 22:15:56', 2, 350000, 0, 70000, 1),
+(22, 1, 2, 'Debt', '2023-03-09 22:18:14', 102, 16350000, 0, 70000, 1);
 
 -- --------------------------------------------------------
 
@@ -109,10 +164,59 @@ CREATE TABLE `invoice_map` (
   `qty` int DEFAULT NULL,
   `currency` varchar(10) NOT NULL,
   `exchange_rate` double NOT NULL,
+  `sayrafa_rate` double DEFAULT NULL,
   `unit_cost` double DEFAULT NULL,
   `unit_price` double NOT NULL,
+  `original_price` double DEFAULT NULL,
   `record_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `invoice_map`
+--
+
+INSERT INTO `invoice_map` (`record_ID`, `invoice_ID_FK`, `item_ID_FK`, `customer_ID_FK`, `record_datetime`, `record_type`, `qty`, `currency`, `exchange_rate`, `sayrafa_rate`, `unit_cost`, `unit_price`, `original_price`, `record_status`) VALUES
+(1, 1, 1571, 2, '2023-03-09 18:25:13', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(2, 1, 1573, 2, '2023-03-09 18:25:13', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(3, 1, 55, 2, '2023-03-09 18:25:13', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(4, 2, 2, 56, '2023-03-09 18:47:21', 'Sale', 1, 'dollar', 80000, 70000, 10, 1600000, 20, 1),
+(5, 3, 1574, 2, '2023-03-09 20:24:52', 'Debt', 1, 'sayrafa', 80000, 70000, 5, 700000, 10, 1),
+(6, 4, 54, 1, '2023-03-09 20:28:26', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(7, 4, 55, 1, '2023-03-09 20:28:26', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(8, 4, 1574, 1, '2023-03-09 20:28:26', 'Debt', 1, 'sayrafa', 80000, 70000, 5, 700000, 10, 1),
+(9, 5, 1571, 1, '2023-03-09 20:36:31', 'Debt', 2, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(10, 5, 1573, 1, '2023-03-09 20:36:31', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(11, 6, 1574, 2, '2023-03-09 20:37:33', 'Debt', 3, 'sayrafa', 80000, 70000, 5, 700000, 10, 1),
+(12, 7, 54, 2, '2023-03-09 20:39:18', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(13, 7, 1571, 2, '2023-03-09 20:39:18', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(14, 8, 54, 1, '2023-03-09 21:06:36', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(15, 8, 1571, 1, '2023-03-09 21:06:36', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(16, 9, 55, 2, '2023-03-09 21:09:55', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(17, 9, 54, 2, '2023-03-09 21:09:55', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(18, 10, 1571, 1, '2023-03-09 21:10:11', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(19, 10, 1573, 1, '2023-03-09 21:10:11', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(20, 11, 55, 1, '2023-03-09 21:10:30', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(21, 11, 54, 1, '2023-03-09 21:10:30', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(22, 12, 55, 2, '2023-03-09 21:13:14', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(23, 12, 1571, 2, '2023-03-09 21:13:14', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(24, 13, 1571, 2, '2023-03-09 21:14:07', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(25, 13, 1573, 2, '2023-03-09 21:14:07', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(26, 14, 54, 1, '2023-03-09 21:15:07', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(27, 14, 1571, 1, '2023-03-09 21:15:07', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(28, 15, 1571, 1, '2023-03-09 21:21:45', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(29, 15, 1573, 1, '2023-03-09 21:21:45', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(30, 16, 72, 2, '2023-03-09 21:22:40', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(31, 16, 1571, 2, '2023-03-09 21:22:40', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(32, 17, 55, 2, '2023-03-09 21:23:46', 'Debt', 1, 'lira', 80000, 70000, 225000, 300000, 300000, 1),
+(33, 17, 1571, 2, '2023-03-09 21:23:46', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(34, 17, 54, 2, '2023-03-09 21:23:46', 'Debt', 2, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(35, 18, 1571, 1, '2023-03-09 22:14:18', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(36, 18, 1573, 1, '2023-03-09 22:14:18', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(37, 19, 1, 54, '2023-03-09 22:15:04', 'Sale', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(38, 20, 54, 2, '2023-03-09 22:15:10', 'Debt', 1, 'dollar', 80000, 70000, 15, 1600000, 20, 1),
+(39, 21, 1571, 2, '2023-03-09 22:15:56', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1),
+(40, 22, 1573, 2, '2023-03-09 22:18:14', 'Debt', 1, 'dollar', 80000, 70000, 100, 16000000, 200, 1),
+(41, 22, 1571, 2, '2023-03-09 22:18:14', 'Debt', 1, 'sayrafa', 80000, 70000, 2, 350000, 5, 1);
 
 -- --------------------------------------------------------
 
@@ -140,7 +244,8 @@ CREATE TABLE `reminders` (
 CREATE TABLE `settings` (
   `setting_ID` int NOT NULL,
   `setting_name` varchar(20) NOT NULL,
-  `setting_value` double DEFAULT NULL,
+  `rate_value` double DEFAULT NULL,
+  `round_value` int DEFAULT '1',
   `value` varchar(100) DEFAULT NULL,
   `setting_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -149,10 +254,11 @@ CREATE TABLE `settings` (
 -- Dumping data for table `settings`
 --
 
-INSERT INTO `settings` (`setting_ID`, `setting_name`, `setting_value`, `value`, `setting_status`) VALUES
-(1, 'exchangeRate', 60000, NULL, 1),
-(2, 'exchangeRate2', NULL, 'MjAyMy0wNS0wMQ==', 1),
-(3, 'exchangeRate3', NULL, 'dW5sb2NrZWQ=', 1);
+INSERT INTO `settings` (`setting_ID`, `setting_name`, `rate_value`, `round_value`, `value`, `setting_status`) VALUES
+(1, 'exchangeRate', 80000, 1, NULL, 1),
+(2, 'exchangeRate2', NULL, NULL, 'MjAyMy0wNS0wMQ==', 1),
+(3, 'exchangeRate3', NULL, NULL, 'dW5sb2NrZWQ=', 1),
+(4, 'sayrafaRate', 70000, 1, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -162,18 +268,18 @@ INSERT INTO `settings` (`setting_ID`, `setting_name`, `setting_value`, `value`, 
 
 CREATE TABLE `stock` (
   `item_ID` int NOT NULL,
-  `barcode` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `item_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `item_description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `barcode` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `item_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `item_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `image_url` varchar(255) DEFAULT NULL,
-  `item_type` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'other',
+  `item_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'other',
   `category_ID_FK` int DEFAULT '1',
-  `item_sub_category` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `item_sub_category` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `qty` int DEFAULT '0',
   `currency` varchar(10) NOT NULL DEFAULT 'lira',
   `item_cost` double DEFAULT NULL,
   `item_price` double NOT NULL,
-  `item_notes` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `item_notes` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `show_on_sell` tinyint(1) NOT NULL DEFAULT '1',
   `item_status` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -183,28 +289,28 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `image_url`, `item_type`, `category_ID_FK`, `item_sub_category`, `qty`, `currency`, `item_cost`, `item_price`, `item_notes`, `show_on_sell`, `item_status`) VALUES
-(1, NULL, '$1.67', 'Touch 1.67$ (Credit only)', '/uploads/1671359583561-167.png', 'Voucher', 1, 'Touch', 0, 'lira', 61000, 75000, '', 1, 1),
-(2, NULL, '$3.79', 'Touch 10 Days (3.79$)', '/uploads/1671360144651-379.png', 'Voucher', 1, 'Touch', 0, 'lira', 137000, 150000, NULL, 1, 1),
-(3, NULL, '$4.50', 'Touch 1 Month (4.50$)', '/uploads/1671360550283-450.png', 'Voucher', 1, 'Touch', 0, 'lira', 162000, 180000, NULL, 1, 1),
-(4, NULL, '$7.58', 'Touch 1 Month (7.58$)', '/uploads/1671360651715-758.png', 'Voucher', 1, 'Touch', 0, 'lira', 270000, 300000, NULL, 1, 1),
-(5, NULL, '$15.15', 'Touch 60 days (15.15$)', '/uploads/1671360704258-1515.png', 'Voucher', 1, 'Touch', 0, 'lira', 542000, 580000, NULL, 1, 1),
-(6, NULL, '$22.73', 'Touch 90 days (22.73$)', '/uploads/1671360751723-2273.png', 'Voucher', 1, 'Touch', 0, 'lira', 814000, 850000, NULL, 1, 1),
-(7, NULL, '$77.28', 'Touch 1 year (77.28$)', '/uploads/1671360802602-7728.png', 'Voucher', 1, 'Touch', 0, 'lira', 2761000, 2800000, NULL, 1, 1),
-(8, NULL, 'START $4.50', 'Touch START (4.50$)', '/uploads/1671360871562-s450.png', 'Voucher', 1, 'Touch', 0, 'lira', 162000, 180000, NULL, 1, 1),
-(9, NULL, 'SMART $7.50', 'Touch SMART (7.50$)', '/uploads/1671360910108-750.png', 'Voucher', 1, 'Touch', 0, 'lira', 270000, 300000, NULL, 1, 1),
-(10, NULL, 'SUPER $13.50', 'Touch SUPER (13.50$)', '/uploads/1671360951659-1350.png', 'Voucher', 1, 'Touch', 0, 'lira', 486000, 520000, NULL, 1, 1),
+(1, NULL, '$1.67', 'Touch 1.67$ (Credit only)', '/uploads/1671359583561-167.png', 'Voucher', 1, 'Touch', 0, 'lira', 61000, 75000, '', 1, 0),
+(2, NULL, '$3.79', 'Touch 10 Days (3.79$)', '/uploads/1671360144651-379.png', 'Voucher', 1, 'Touch', 0, 'lira', 137000, 150000, NULL, 1, 0),
+(3, NULL, '$4.50', 'Touch 1 Month (4.50$)', '/uploads/1671360550283-450.png', 'Voucher', 1, 'Touch', 0, 'lira', 162000, 180000, NULL, 1, 0),
+(4, NULL, '$7.58', 'Touch 1 Month (7.58$)', '/uploads/1671360651715-758.png', 'Voucher', 1, 'Touch', 0, 'lira', 270000, 300000, NULL, 1, 0),
+(5, NULL, '$15.15', 'Touch 60 days (15.15$)', '/uploads/1671360704258-1515.png', 'Voucher', 1, 'Touch', 0, 'lira', 542000, 580000, NULL, 1, 0),
+(6, NULL, '$22.73', 'Touch 90 days (22.73$)', '/uploads/1671360751723-2273.png', 'Voucher', 1, 'Touch', 0, 'lira', 814000, 850000, NULL, 1, 0),
+(7, NULL, '$77.28', 'Touch 1 year (77.28$)', '/uploads/1671360802602-7728.png', 'Voucher', 1, 'Touch', 0, 'lira', 2761000, 2800000, NULL, 1, 0),
+(8, NULL, 'START $4.50', 'Touch START (4.50$)', '/uploads/1671360871562-s450.png', 'Voucher', 1, 'Touch', 0, 'lira', 162000, 180000, NULL, 1, 0),
+(9, NULL, 'SMART $7.50', 'Touch SMART (7.50$)', '/uploads/1671360910108-750.png', 'Voucher', 1, 'Touch', 0, 'lira', 270000, 300000, NULL, 1, 0),
+(10, NULL, 'SUPER $13.50', 'Touch SUPER (13.50$)', '/uploads/1671360951659-1350.png', 'Voucher', 1, 'Touch', 0, 'lira', 486000, 520000, NULL, 1, 0),
 (11, NULL, 'SOS $1.22', 'Touch SOS (1.22$)', '/uploads/1671360992110-122.png', 'Voucher', 1, 'Touch', 0, 'lira', 45000, 60000, NULL, 1, 0),
-(12, NULL, 'SOS 1.22$', 'Touch SOS (1.22$)', '/uploads/1671399852146-122.png', 'Voucher', 1, 'Touch', 0, 'lira', 45000, 60000, NULL, 1, 1),
-(13, NULL, '$1.22', 'Alfa 1.22$ (credit only)', '/uploads/1673970737910-emergency-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 30000, 50000, NULL, 1, 1),
-(14, NULL, '$3.03', 'Alfa 10 days (3.03$)', '/uploads/1673970297312-3.03-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 135000, 150000, NULL, 1, 1),
-(15, NULL, '$4.50', 'Alfa 1 Month (4.50$)', '/uploads/1673970333166-4.5-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 200000, 230000, NULL, 1, 1),
-(16, NULL, '$7.58', 'Alfa 1 Month (7.58$)', '/uploads/1673970371917-7.58-recharge-card-1.png', 'Voucher', 1, 'Alfa', 0, 'lira', 333000, 350000, NULL, 1, 1),
-(17, NULL, '$15.15', 'Alfa 60 days (15.15$)', '/uploads/1673970408968-15.15-recharge-card-1.png', 'Voucher', 1, 'Alfa', 0, 'lira', 670000, 700000, NULL, 1, 1),
-(18, NULL, '$22.73', 'Alfa 90 days (22.73$)', '/uploads/1673970611215-22.73-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 1005000, 1050000, NULL, 1, 1),
-(19, NULL, '$77.28', 'Alfa 1 year (77.28$)', '/uploads/1673970658799-77.28-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 3410000, 3500000, NULL, 1, 1),
-(51, NULL, 'Waffer $1.22', 'Alfa Waffer (1.22$)', '/uploads/1673971003562-waffer-emergency-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 55000, 70000, NULL, 1, 1),
-(52, NULL, 'Waffer $4.50', 'Alfa Waffer (4.50$)', '/uploads/1673971049014-waffer-4.5-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 180000, 200000, NULL, 1, 1),
-(53, NULL, 'Waffer $7.50', 'Alfa Waffer (7.50$)', '/uploads/1673971087045-1662472190487_image.png', 'Voucher', 1, 'Alfa', 0, 'lira', 332000, 350000, NULL, 1, 1),
+(12, NULL, 'SOS 1.22$', 'Touch SOS (1.22$)', '/uploads/1671399852146-122.png', 'Voucher', 1, 'Touch', 0, 'lira', 45000, 60000, NULL, 1, 0),
+(13, NULL, '$1.22', 'Alfa 1.22$ (credit only)', '/uploads/1673970737910-emergency-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 30000, 50000, NULL, 1, 0),
+(14, NULL, '$3.03', 'Alfa 10 days (3.03$)', '/uploads/1673970297312-3.03-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 135000, 150000, NULL, 1, 0),
+(15, NULL, '$4.50', 'Alfa 1 Month (4.50$)', '/uploads/1673970333166-4.5-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 200000, 230000, NULL, 1, 0),
+(16, NULL, '$7.58', 'Alfa 1 Month (7.58$)', '/uploads/1673970371917-7.58-recharge-card-1.png', 'Voucher', 1, 'Alfa', 0, 'lira', 333000, 350000, NULL, 1, 0),
+(17, NULL, '$15.15', 'Alfa 60 days (15.15$)', '/uploads/1673970408968-15.15-recharge-card-1.png', 'Voucher', 1, 'Alfa', 0, 'lira', 670000, 700000, NULL, 1, 0),
+(18, NULL, '$22.73', 'Alfa 90 days (22.73$)', '/uploads/1673970611215-22.73-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 1005000, 1050000, NULL, 1, 0),
+(19, NULL, '$77.28', 'Alfa 1 year (77.28$)', '/uploads/1673970658799-77.28-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 3410000, 3500000, NULL, 1, 0),
+(51, NULL, 'Waffer $1.22', 'Alfa Waffer (1.22$)', '/uploads/1673971003562-waffer-emergency-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 55000, 70000, NULL, 1, 0),
+(52, NULL, 'Waffer $4.50', 'Alfa Waffer (4.50$)', '/uploads/1673971049014-waffer-4.5-recharge-card.png', 'Voucher', 1, 'Alfa', 0, 'lira', 180000, 200000, NULL, 1, 0),
+(53, NULL, 'Waffer $7.50', 'Alfa Waffer (7.50$)', '/uploads/1673971087045-1662472190487_image.png', 'Voucher', 1, 'Alfa', 0, 'lira', 332000, 350000, NULL, 1, 0),
 (54, '999999999999', NULL, 'dollar test', NULL, 'barcode', 3, NULL, 5, 'dollar', 15, 20, NULL, 1, 1),
 (55, '111222354858', NULL, 'lira test', NULL, 'barcode', 5, NULL, 10, 'lira', 225000, 300000, NULL, 1, 1),
 (56, NULL, NULL, 'iPhone Cable 1 M', NULL, 'other', 6, NULL, 10, 'dollar', 10, 20, NULL, 1, 1),
@@ -219,8 +325,8 @@ INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `ima
 (70, NULL, 'test', '213123', '/uploads/1674140784038-alfa.png', 'Voucher', 1, 'Alfa', 0, 'lira', 150000, 300000, 'null', 1, 0),
 (71, NULL, 'test', 'test', '/uploads/1674140800685-no-image.jpg', 'Voucher', 1, 'Other', 0, 'lira', 158000, 158888, 'null', 1, 0),
 (72, '123456', NULL, 'TP LINK Modem VDSL', NULL, 'barcode', 3, NULL, 20, 'dollar', 15, 20, NULL, 1, 1),
-(73, NULL, NULL, 'no barcode test', NULL, 'other', 1, NULL, 20, 'lira', 150000, 200000, NULL, 1, 1),
-(74, '5289000045210', NULL, 'cabel vision old', NULL, 'other', 1, NULL, 0, 'lira', 39, 45, NULL, 1, 1),
+(73, NULL, NULL, 'no barcode test', NULL, 'other', 1, NULL, 20, 'sayrafa', 15, 20, NULL, 1, 1),
+(74, '5289000045210', NULL, 'cabel vision old', NULL, 'other', 1, NULL, 0, 'lira', 390000, 450000, NULL, 1, 1),
 (75, '6972585785044', NULL, 'headset p4x', NULL, 'other', 1, NULL, 0, 'dollar', 11, 14, NULL, 1, 1),
 (76, '6548', NULL, 'chromecast', NULL, 'other', 1, NULL, 0, 'dollar', 7.5, 10, NULL, 1, 1),
 (77, '6416', NULL, 'chromecast 2', NULL, 'other', 1, NULL, 0, 'dollar', 10, 14, NULL, 1, 1),
@@ -348,7 +454,7 @@ INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `ima
 (199, '357047363800285', NULL, 'spark 8c 4ram 128gb.', NULL, 'other', 1, NULL, 0, 'dollar', 114, 125, NULL, 1, 1),
 (200, '333', NULL, 'air pods..', NULL, 'other', 1, NULL, 0, 'dollar', 3, 7, NULL, 1, 1),
 (201, '902', NULL, 'earphone oraimo e2', NULL, 'other', 1, NULL, 0, 'dollar', 0.75, 2, NULL, 1, 1),
-(202, '6847', NULL, 'ar phone akj', NULL, 'other', 1, NULL, 0, 'lira', 3, 6, NULL, 1, 1),
+(202, '6847', NULL, 'ar phone akj', NULL, 'other', 1, NULL, 0, 'dollar', 3, 6, NULL, 1, 1),
 (203, '356298776248577', NULL, 'a03 core 2ram 32gb', NULL, 'other', 1, NULL, 0, 'dollar', 84, 95, NULL, 1, 1),
 (204, '6937643539885', NULL, 'vap', NULL, 'other', 1, NULL, 0, 'dollar', 9, 11, NULL, 1, 1),
 (205, '6937643539892', NULL, 'vap', NULL, 'other', 1, NULL, 0, 'dollar', 9, 11, NULL, 1, 1),
@@ -401,8 +507,8 @@ INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `ima
 (252, '357876813464007', NULL, 'tecno 7 pro 128GB', NULL, 'other', 1, NULL, 0, 'dollar', 133, 140, NULL, 1, 1),
 (253, '356980900852966', NULL, 'tecno sp7 64GB', NULL, 'other', 1, NULL, 0, 'dollar', 106, 115, NULL, 1, 1),
 (254, '354443480384589', NULL, 'tecno 6 go', NULL, 'other', 1, NULL, 0, 'dollar', 80, 90, NULL, 1, 1),
-(255, '28139621800047', NULL, 'cablevision resiver 1', NULL, 'other', 1, NULL, 0, 'lira', 750000, 820000, NULL, 1, 1),
-(256, '28139621800001', NULL, 'cablevision resiver 2', NULL, 'other', 1, NULL, 0, 'lira', 750000, 820000, NULL, 1, 1),
+(255, '28139621800047', NULL, 'cablevision resiver 1', NULL, 'other', 1, NULL, 0, 'dollar', 10, 12, NULL, 1, 1),
+(256, '28139621800001', NULL, 'cablevision resiver 2', NULL, 'other', 1, NULL, 0, 'dollar', 9, 12, NULL, 1, 1),
 (257, '6913410785549', NULL, 'chromecast', NULL, 'other', 1, NULL, 0, 'dollar', 10, 13, NULL, 1, 1),
 (258, '6182', NULL, 'jus vip', NULL, 'other', 1, NULL, 0, 'dollar', 1, 2.5, NULL, 1, 1),
 (259, '6495', NULL, 'mic aux', NULL, 'other', 1, NULL, 0, 'dollar', 1.5, 3, NULL, 1, 1),
@@ -963,7 +1069,13 @@ INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `ima
 (813, '3060', NULL, '60 uc', NULL, 'other', 1, NULL, 0, 'dollar', 1, 2, NULL, 1, 1),
 (814, '800', NULL, 'sattilite', NULL, 'other', 1, NULL, 0, 'lira', 0, 0, NULL, 1, 1),
 (815, '700', NULL, 'NETFLIX', NULL, 'other', 1, NULL, 0, 'lira', 85000, 110000, NULL, 1, 1),
-(816, '3600', NULL, '600 uc', NULL, 'other', 1, NULL, 0, 'dollar', 10, 11.5, NULL, 1, 1);
+(816, '3600', NULL, '600 uc', NULL, 'other', 1, NULL, 0, 'dollar', 10, 11.5, NULL, 1, 1),
+(1571, NULL, NULL, 'another sayrafa test', NULL, 'other', 7, NULL, 10, 'sayrafa', 2, 5, NULL, 1, 1),
+(1572, NULL, NULL, 'test', NULL, 'other', 7, NULL, 10, 'lira', 150000, 200000, NULL, 1, 0),
+(1573, '123456', NULL, 'fresh dollar', NULL, 'barcode', 7, NULL, 10, 'dollar', 100, 200, NULL, 1, 1),
+(1574, '1234567', NULL, 'sayrafa', NULL, 'barcode', 7, NULL, 5, 'sayrafa', 5, 10, NULL, 1, 1),
+(1575, '365431851', NULL, 'test test test', NULL, 'barcode', 7, NULL, 5, 'lira', 500000, 700000, NULL, 1, 0),
+(1576, NULL, NULL, 'test', NULL, 'other', 3, NULL, 10, 'dollar', 1, 2, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -973,8 +1085,9 @@ INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `ima
 
 CREATE TABLE `stock_categories` (
   `category_ID` int NOT NULL,
+  `category_index` int DEFAULT NULL,
   `category_name` varchar(50) NOT NULL,
-  `is_hidden` tinyint NOT NULL DEFAULT '0',
+  `show_on_sell` tinyint NOT NULL DEFAULT '1',
   `category_status` tinyint NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -982,13 +1095,14 @@ CREATE TABLE `stock_categories` (
 -- Dumping data for table `stock_categories`
 --
 
-INSERT INTO `stock_categories` (`category_ID`, `category_name`, `is_hidden`, `category_status`) VALUES
-(1, 'uncategorized', 1, 1),
-(2, 'test', 0, 0),
-(3, 'Networking', 0, 1),
-(4, 'test 2', 0, 0),
-(5, 'Mobile Accessories', 0, 1),
-(6, 'Cables', 0, 1);
+INSERT INTO `stock_categories` (`category_ID`, `category_index`, `category_name`, `show_on_sell`, `category_status`) VALUES
+(1, 0, 'uncategorized', 0, 1),
+(2, NULL, 'test', 1, 0),
+(3, 1, 'Networking', 1, 1),
+(4, NULL, 'test 2', 1, 0),
+(5, 2, 'Mobile Accessories', 1, 1),
+(6, 3, 'Cables', 1, 1),
+(7, 4, 'new', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -998,14 +1112,14 @@ INSERT INTO `stock_categories` (`category_ID`, `category_name`, `is_hidden`, `ca
 
 CREATE TABLE `users` (
   `user_ID` int NOT NULL,
-  `username` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `type` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'user',
-  `owner` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `canAddService` tinyint(1) NOT NULL DEFAULT '0',
-  `canAddItem` tinyint(1) NOT NULL DEFAULT '0',
-  `canViewCustomers` tinyint(1) NOT NULL DEFAULT '0',
-  `canViewPayments` tinyint(1) NOT NULL DEFAULT '0',
+  `username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `type` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user',
+  `owner` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `viewStock` tinyint(1) NOT NULL DEFAULT '0',
+  `viewReports` tinyint(1) NOT NULL DEFAULT '0',
+  `deleteInvoice` tinyint(1) NOT NULL DEFAULT '0',
+  `modifyCustomers` tinyint(1) NOT NULL DEFAULT '0',
   `user_status` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
@@ -1013,9 +1127,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_ID`, `username`, `password`, `type`, `owner`, `canAddService`, `canAddItem`, `canViewCustomers`, `canViewPayments`, `user_status`) VALUES
+INSERT INTO `users` (`user_ID`, `username`, `password`, `type`, `owner`, `viewStock`, `viewReports`, `deleteInvoice`, `modifyCustomers`, `user_status`) VALUES
 (1, 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin', 'admin', 1, 1, 1, 1, 1),
-(2, 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user', 'user', 1, 1, 1, 0, 1);
+(2, 'user', 'ee11cbb19052e40b07aac0ca060c23ee', 'user', 'user', 1, 0, 1, 0, 1);
 
 --
 -- Indexes for dumped tables
@@ -1091,13 +1205,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `customer_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customers_payments`
 --
 ALTER TABLE `customers_payments`
-  MODIFY `payment_ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `debts_history`
@@ -1109,13 +1223,13 @@ ALTER TABLE `debts_history`
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `invoice_ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `invoice_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `invoice_map`
 --
 ALTER TABLE `invoice_map`
-  MODIFY `record_ID` int NOT NULL AUTO_INCREMENT;
+  MODIFY `record_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `reminders`
@@ -1127,19 +1241,19 @@ ALTER TABLE `reminders`
 -- AUTO_INCREMENT for table `settings`
 --
 ALTER TABLE `settings`
-  MODIFY `setting_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `setting_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `stock`
 --
 ALTER TABLE `stock`
-  MODIFY `item_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1571;
+  MODIFY `item_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1577;
 
 --
 -- AUTO_INCREMENT for table `stock_categories`
 --
 ALTER TABLE `stock_categories`
-  MODIFY `category_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `category_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`

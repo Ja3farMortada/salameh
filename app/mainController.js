@@ -57,6 +57,10 @@ app.factory('mainFactory', function () {
 // Controller
 app.controller('mainController', function ($scope, NotificationService, $rootScope, $location, mainFactory) {
 
+    mainFactory.loggedInUser.subscribe(res => {
+        $scope.loggedInUser = res;
+    })
+    
     // select tab
     $rootScope.$on('$routeChangeSuccess', function() {
         $scope.tabSelected = $location.path();

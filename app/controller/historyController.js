@@ -47,11 +47,6 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
         $scope.totalPaymentsLira = totalPayments.totalLira;
     }, true)
 
-    // set active td in invoices table
-    $scope.isActive = ID => {
-        return $scope.activeRow === ID;
-    };
-
 
     // define datepicker value
     $scope.datePickerValue = historyFactory.datePickerValue;
@@ -80,26 +75,22 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
     // watch for datepicker value change and get invoices
     $scope.$watch('datePickerValue', function () {
         $scope.items = null;
-        $scope.activeRow = null;
         historyFactory.fetchSalesInvoices($scope.datePickerValue);
         historyFactory.fetchPaymentsHistory($scope.datePickerValue)
     });
 
-    // show invoice details 
-    let selectedInvoice;
+    // show invoice details
     $scope.showInvoiceDetails = (ID, totalPrice) => {
         $scope.totalPrice = totalPrice;
         let index = $scope.salesInvoices.findIndex(index => index.invoice_ID == ID);
-        selectedInvoice = $scope.salesInvoices[index];
+        $scope.selectedInvoice = $scope.salesInvoices[index];
         $scope.user = $scope.salesInvoices[index]['user']
         $scope.items = $scope.salesInvoices[index]['invoice_map'];
-        $scope.activeRow = ID;
     };
 
     // delete invoice
     $scope.deleteInvoice = function () {
-        historyFactory.deleteInvoice(selectedInvoice).then(() => {
-            $scope.activeRow = null;
+        historyFactory.deleteInvoice($scope.selectedInvoice).then(() => {
             $scope.items = null
         })
         // NotificationService.showWarning().then(ok => {

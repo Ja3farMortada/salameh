@@ -1,4 +1,4 @@
-app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, sayrafaFactory, NotificationService) {
+app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, sayrafaFactory, customersFactory, NotificationService) {
 
     // define and trigger focus on barcode input
     $scope.triggerFocus = () => {
@@ -50,6 +50,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             $scope.searchVal = res;
         })
 
+        $scope.customers = customersFactory.customers;
         $scope.triggerFocus();
 
     })
@@ -262,23 +263,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             })
         }
     }
-    // takeaway (checkout & print)
-    // $scope.takeaway = () => {
-    //     if ($scope.invoice.length > 0) {
-    //         NotificationService.showWarning().then(async res => {
-    //             if (res.isConfirmed) {
-    //                 let response = await sellFactory.checkout($scope.invoice, 'takeaway');
-    //                 if (response == 'success') {
-    //                     if ($scope.selectedTab) {
-    //                         $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
-    //                         $scope.$digest(sellFactory.clearInvoice());
-    //                     }
-    //                     $scope.$digest(sellFactory.clearInvoice());
-    //                 }
-    //             }
-    //         })
-    //     }
-    // }
 
     // substract Qty
     $scope.substractQty = index => {
@@ -359,6 +343,62 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             data['unit_price'] = data['currency'] == 'dollar' ? $scope.round(data.original_price * $scope.exchangeRate.rate_value) : $scope.sayrafaRound(data.original_price * $scope.sayrafaRate.rate_value);
         }
         priceModal.hide();
+    }
+
+    // submit customer in invoice
+    // open modal to choose customer
+    const customersModal = new bootstrap.Modal('#customerModal');
+    const select_box = document.querySelector('#customer_select');
+    let customerModalType;
+    $scope.openCustomerModal = type => {
+        customerModalType = type;
+        $scope.selectedCustomer = null;
+        if ($scope.invoice.length > 0) {
+            customersModal.show();
+            $('#customerModal').on('shown.bs.modal', () => {
+                // use dselect library to enable live search within select
+                dselect(select_box, {
+                    search: true,
+                    clearable: true
+                })
+            })
+        } else {
+            $scope.triggerFocus()
+        }
+    }
+
+    $scope.submitCustomerModal = () => {
+        if ($scope.selectedCustomer) {
+            NotificationService.showWarning().then(async res => {
+                if (res.isConfirmed) {
+                    if (customerModalType == 'debt') {
+                        // checkout invoice as debt if customer was selected
+                        let text = await sellFactory.checkoutDebt($scope.selectedCustomer, $scope.invoice);
+                        customersModal.hide();
+                        if ($scope.selectedTab) {
+                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
+                            $scope.$digest(sellFactory.clearInvoice());
+                        }
+                        $scope.$digest(sellFactory.clearInvoice());
+                        $scope.triggerFocus();
+
+                        // send invoice as whatsapp message
+                        // window.electron.send('send-whatsapp', [text]);
+
+                    } else if (customerModalType == 'normal') {
+                        // checkout invoice as normal but assign to a customer for reference only
+                        await sellFactory.checkoutCustomer($scope.selectedCustomer, $scope.invoice)
+                        customersModal.hide();
+                        if ($scope.selectedTab) {
+                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
+                            $scope.$digest(sellFactory.clearInvoice());
+                        }
+                        $scope.$digest(sellFactory.clearInvoice());
+                        $scope.triggerFocus();
+                    }
+                }
+            })
+        }
     }
 
 });

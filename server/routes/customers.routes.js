@@ -16,8 +16,8 @@ module.exports = (app, db) => {
         let data = req.body;
         let query = `INSERT INTO customers SET ?`;
         try {
-            let [customer] = await db.query(query);
-            let [[result]] = await db.query(`SELECT * FROM customers WHERE customer_ID = ${result.insertId}`);
+            let [customer] = await db.query(query, data);
+            let [[result]] = await db.query(`SELECT * FROM customers WHERE customer_ID = ${customer.insertId}`);
             res.send(result)
         } catch (error) {
             res.status(500).send(error);

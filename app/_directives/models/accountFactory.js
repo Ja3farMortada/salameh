@@ -1,4 +1,4 @@
-app.factory('accountFactory', ['$http', 'NotificationService', function($http, NotificationService) {
+app.factory('accountFactory', function($http, mainFactory, NotificationService) {
     // define URL
     const url = `http://localhost:3000`;
 
@@ -17,37 +17,40 @@ app.factory('accountFactory', ['$http', 'NotificationService', function($http, N
 
     // update username
     model.editUsername = data => {
-        return $http.post(`${url}/editUsername`, data).then(function (response) {
-            localStorage.setItem('setting', JSON.stringify(response.data[0]));
+        $http.post(`${url}/editUsername`, data).then(function (response) {
+            $('#editUsernameModal').modal('toggle');
+            localStorage.setItem('setting', JSON.stringify(response.data));
+            mainFactory.loggedInUser.next(response.data);
             NotificationService.showSuccess();
-            $('#editUsernameModal').modal('toggle');
         }, function (error) {
-            NotificationService.showError();
-            $('#editUsernameModal').modal('toggle');
+            NotificationService.showError(error);
         });
     };
 
     // change password
     model.changePassword = data => {
-        return $http.post(`${url}/editPassword`, data).then(function (response) {
-            localStorage.setItem('setting', JSON.stringify(response.data[0]));
+        return $http.post(`${url}/editPassword`, data).then(response => {
+            localStorage.setItem('setting', JSON.stringify(response.data));
+            mainFactory.loggedInUser.next(response.data);
             NotificationService.showSuccess();
             $('#changePasswordModal').modal('toggle');
-        }, function (error) {
-            NotificationService.showError();
-            $('#changePasswordModal').modal('toggle');
+        }, error => {
+            NotificationService.showErrorText(error.data).then(ok => {
+                $('#oldPassword').trigger('focus');
+            });
+            return 'error'
         });
     };
 
     // add new user
     model.addUser = data => {
-        return $http.post(`${url}/addUser`, data).then(function (response) {
-            model.users.push(response.data[0]);
+        return $http.post(`${url}/addUser`, data).then(response => {
+            model.users.push(response.data);
             NotificationService.showSuccess();
-            $('#addUserModal').modal('toggle');
-        }, function (error) {
-            NotificationService.showError();
-            $('#addUserModal').modal('toggle');
+            $('#userModal').modal('toggle');
+        }, error => {
+            NotificationService.showError(error);
+            $('#userModal').modal('toggle');
         });
     };
 
@@ -56,10 +59,10 @@ app.factory('accountFactory', ['$http', 'NotificationService', function($http, N
         return $http.post(`${url}/editUser`, data).then(function (response) {
             angular.copy(response.data, model.users);
             NotificationService.showSuccess();
-            $('#editUserModal').modal('toggle');
+            $('#userModal').modal('toggle');
         }, function (error) {
             NotificationService.showError();
-            $('#editUserModal').modal('toggle');
+            $('#userModal').modal('toggle');
         });
     };
 
@@ -77,12 +80,12 @@ app.factory('accountFactory', ['$http', 'NotificationService', function($http, N
 
     // update permissions
     model.updatePermissions = data => {
-        return $http.post(`${url}/updatePermissions`, data).then(function (response) {
+        return $http.post(`${url}/updatePermissions`, data).then(response => {
             angular.copy(response.data, model.users);
             NotificationService.showSuccess();
             $('#permissionsModal').modal('toggle');
-        }, function (error) {
-            NotificationService.showError();
+        }, error => {
+            NotificationService.showError(error);
             $('#permissionsModal').modal('toggle');
         });
     };
@@ -98,4 +101,4 @@ app.factory('accountFactory', ['$http', 'NotificationService', function($http, N
     };
 
     return model;
-}]);
+});

@@ -101,18 +101,30 @@
                                         </datalist>
                                     </form>
                                 </td>
+                                <td colspan="6"></td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="card-footer" ng-show="invoice.length > 0">
-                        <!-- checkout and hold buttons -->
-                        <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
-                                class="fas fa-cart-arrow-down"></i>
-                            Checkout</button>
-                        <button ng-show="invoice.length > 0" class="btn btn-secondary" ng-click="clearInvoice()"><i
-                                class="fas fa-times"></i> Clear</button>
-                        <!-- <button class="btn btn-primary float-end" ng-click="takeaway()"><i
-                                class="fas fa-motorcycle"></i> Takeaway</button> -->
+                        <!-- checkout buttons -->
+                        <div class="row">
+                            <div class="col-auto">
+                                <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
+                                        class="fas fa-cart-arrow-down"></i>
+                                    Checkout</button>
+                                <button ng-show="invoice.length > 0" class="btn btn-secondary"
+                                    ng-click="clearInvoice()"><i class="fas fa-times"></i> Clear</button>
+                            </div>
+                            <div class="col-auto ms-auto">
+                                <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i
+                                        class="fas fa-user-pen"></i>
+                                    Add as Debt</button>
+                                <button class="btn btn-primary" ng-click="openCustomerModal('normal')"><i
+                                        class="fas fa-user-tag"></i> Register to Customer</button>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
@@ -220,19 +232,50 @@
                         <label>Currency</label>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="currencyOption" id="liraOption"
-                                ng-model="priceModalData.currency" value="lira" ng-required="priceModalData.original_currency != 'lira'">
+                                ng-model="priceModalData.currency" value="lira"
+                                ng-required="priceModalData.original_currency != 'lira'">
                             <label class="form-check-label text-dark" for="liraOption"><strong>LBP L.L</strong></label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="currencyOption" id="dollarOption"
-                                ng-model="priceModalData.currency" value="dollar" ng-required="priceModalData.original_currency != 'lira'">
-                            <label class="form-check-label text-success" for="dollarOption"><strong>USD $</strong></label>
+                                ng-model="priceModalData.currency" value="dollar"
+                                ng-required="priceModalData.original_currency != 'lira'">
+                            <label class="form-check-label text-success" for="dollarOption"><strong>USD
+                                    $</strong></label>
                         </div>
                     </div>
 
                     <br>
                     <label>New Price</label>
-                    <input type="number" step="0.01" class="form-control" ng-model="priceModalData.newPrice" id="newPrice" required>
+                    <input type="number" step="0.01" class="form-control" ng-model="priceModalData.newPrice"
+                        id="newPrice" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- choose customer Modal -->
+<div class="modal fade" id="customerModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Choose Customer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitCustomerModal()">
+                <div class="modal-body">
+                    <select id="customer_select" class="form-select" ng-model="selectedCustomer">
+                        <option value="">Select Customer:</option>
+                        <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
+                        </option>
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>

@@ -58,16 +58,21 @@ async function createWindow() {
         original: true
     })
 
-    if(isDev) {
+    if (isDev) {
         win.loadFile('app/index.html')
     } else {
         try {
-            const [status] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
-            if (status[0]['value'] == 'bG9ja2Vk') {
+            await db.execute(`UPDATE settings SET value = 'MjAyMy0wNS0wMQ==' WHERE setting_name = 'exchangeRate2'`);
+            const [
+                [status]
+            ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
+            if (status.value == 'bG9ja2Vk') {
                 win.loadFile('error.html')
-            } else if (status[0]['value'] == 'dW5sb2NrZWQ=') {
-                const [result] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate2'`);
-                let date = Buffer.from(result[0]['value'], 'base64').toString('ascii');
+            } else if (status.value == 'dW5sb2NrZWQ=') {
+                const [
+                    [result]
+                ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate2'`);
+                let date = Buffer.from(result.value, 'base64').toString('ascii');
                 let now = moment().format('yyyy-MM-DD');
                 if (date > now) {
                     if (ID == 'a56de6e9-f11b-42df-8275-1332017907b5') {
@@ -82,6 +87,7 @@ async function createWindow() {
             }
         } catch (error) {
             console.log(error);
+            win.loadFile('error.html')
         }
     }
 
@@ -142,7 +148,5 @@ ipcMain.handle('read-package', function () {
 })
 
 ipcMain.handle('send-whatsapp', async function (event, data) {
-    let nl = '%0A';
-    let text = `Salameh Cell${nl}Please settle your debts${nl}Your current balance is:${nl} - Fresh USD: ${data.dollar_debt.toLocaleString()} $ ${nl} - Sayrafa: ${data.sayrafa_debt.toLocaleString()} $ ${nl} - LBP: ${data.lira_debt.toLocaleString()} L.L`
-    await shell.openExternal(`https://api.whatsapp.com/send?phone=${data.customer_phone}&text=${text}`);
+    await shell.openExternal(`https://api.whatsapp.com/send?phone=${data[0]}&text=${data[1]}`);
 })
