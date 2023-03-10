@@ -62,6 +62,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             exchange_rate: model.exchangeRate.rate_value,
             sayrafa_rate: model.sayrafaRate.rate_value
         }
+        console.log(invoice);
         return $http.post(`${url}/checkout`, {
             items: data,
             invoice: invoice
@@ -81,7 +82,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             invoice_type: 'Debt',
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
-            exchange_rate: model.exchangeRate.setting_value,
+            exchange_rate: model.exchangeRate.rate_value,
             sayrafa_rate: model.sayrafaRate.rate_value
         }
         return $http.post(`${url}/checkoutDebt`, {
