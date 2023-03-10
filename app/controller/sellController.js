@@ -174,7 +174,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                         barcode: response.barcode,
                         item_description: response.item_description,
                         currency: response.currency,
-                        exchange_rate: $scope.exchangeRate.setting_value,
+                        exchange_rate: $scope.exchangeRate.rate_value,
                         sayrafa_rate: $scope.sayrafaRate.rate_value,
                         unit_cost: response.item_cost,
                         original_price: response.item_price,
@@ -217,7 +217,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                     barcode: element.barcode,
                     item_description: element.item_description,
                     currency: element.currency,
-                    exchange_rate: $scope.exchangeRate.setting_value,
+                    exchange_rate: $scope.exchangeRate.rate_value,
+                    sayrafa_rate: $scope.sayrafaRate.rate_value,
                     unit_cost: element.item_cost,
                     unit_price: element.item_price,
                     qty: 1

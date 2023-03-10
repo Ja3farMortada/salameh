@@ -69,7 +69,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
     // Logout
     $scope.logout = function () {
         NotificationService.showWarning().then(ok => {
-            if (ok) {
+            if (ok.isConfirmed) {
                 localStorage.removeItem('setting');
                 window.location.replace('index.html');
             }
