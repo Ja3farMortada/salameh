@@ -7,6 +7,7 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
     let categoriesSubscription;
     let itemsSubscription;
     let searchSubscription;
+    let perPageSub;
     $scope.$on('$viewContentLoaded', () => {
         selectionSubscription = stockFactory.selectedCategory.subscribe(res => {
             $scope.selectedCategory = res;
@@ -26,6 +27,9 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
         searchSubscription = stockFactory.searchVal.subscribe(res => {
             $scope.searchVal = res;
         })
+        perPageSub = stockFactory.itemsPerPage.subscribe(res => {
+            $scope.itemsPerPage = res;
+        })
 
     })
 
@@ -36,7 +40,18 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
         categoriesSubscription.unsubscribe();
         itemsSubscription.unsubscribe();
         searchSubscription.unsubscribe();
+        perPageSub.unsubscribe();
     })
+
+    // tab selection
+    $scope.selectedTab = stockFactory.selectedTab;
+    $scope.setTab = tab => {
+        stockFactory.setTab(tab);
+        $scope.selectedTab = stockFactory.selectedTab;
+    }
+
+    // items per page init
+    $scope.options = stockFactory.setItemsPerPage();
 
     // initialize Round calculation function
     $scope.round = data => {
@@ -141,12 +156,12 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
             angular.copy(data, $scope.itemsModal);
             itemsModal.show();
         } else {
-            itemsModalType = 'add'
+            itemsModalType = 'add';
             $scope.itemsModal = {
                 item_description: null,
                 barcode: null,
                 item_type: 'barcode',
-                category_ID_FK: $scope.selectedCategory.category_ID,
+                category_ID_FK: data == 'default' ? null : $scope.selectedCategory.category_ID,
                 currency: null,
                 qty: null,
                 item_cost: null,

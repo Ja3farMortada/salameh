@@ -1,9 +1,166 @@
 <div class="container-fluid">
-    <div class="row mt-3">
+    <!-- tabs -->
+    <ul class="nav nav-tabs nav-fills d-flex justify-content-center mt-2">
+        <li class="nav-item">
+            <a ng-class="{'active': selectedTab == 'stock'}" class="nav-link history-link" ng-click="setTab('stock')"><i
+                    class="fas fa-boxes-stacked fa-lg"></i> Stock</a>
+        </li>
+        <li class="nav-item">
+            <a ng-class="{'active': selectedTab == 'categories'}" class="nav-link history-link"
+                ng-click="setTab('categories')"><i class="fas fa-sitemap fa-lg"></i> Categories</a>
+        </li>
+    </ul>
+
+    <!-- ########################## Stock Tab #######################################  -->
+
+    <div ng-show="selectedTab == 'stock'">
+        <div class="row justify-content-between mb-1 mt-3 select-off">
+            <!-- add items -->
+            <div class="col-auto">
+                <button class="btn btn-success" ng-click="openItemsModal('Add', 'default')">+ Add Item +</button>
+            </div>
+
+            <!-- paginator -->
+            <div class="col-auto">
+                <dir-pagination-controls pagination-id="mainStock" max-size="6" direction-links="true"
+                    boundary-links="false" template-url="templates/dirPagination.tpl.html">
+                </dir-pagination-controls>
+            </div>
+
+            <!-- toggle number of items -->
+            <div class="col-auto">
+                <div class="row align-items-center g-1">
+                    <div class="col-auto">
+                        <label>Show</label>
+                    </div>
+                    <div class="col-auto">
+                        <select class="form-select mr-1 ml-1" ng-model="itemsPerPage.value"
+                            ng-options="option.value as option.name for option in options">
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <label>entries</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-striped text-center table-sm">
+                    <thead>
+                        <tr>
+                            <th>
+                                <form ng-submit="barcodeSearch()">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                        <input id="barcodeSearch" type="search" class="form-control form-control-sm"
+                                            placeholder="Barcode ..." ng-model="stockSearch.barcode" spellcheck="false">
+                                    </div>
+                                </form>
+                            </th>
+                            <th>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="search" class="form-control form-control-sm"
+                                        placeholder="Description ..." ng-model="stockSearch.item_description"
+                                        spellcheck="false">
+                                </div>
+                            </th>
+                            <th>
+                                <select class="form-control form-control-sm" ng-model="stockSearch.category_name">
+                                    <option value="">All</option>
+                                    <option ng-repeat="data in categories" value="{{ data.category_name }}">
+                                        {{ data.category_name }}</option>
+                                </select>
+                            </th>
+                            <th>
+                                <select class="form-control form-control-sm" ng-model="stockSearch.currency">
+                                    <option value="">All</option>
+                                    <option value="dollar">Dollar</option>
+                                    <option value="lira">Lira</option>
+                                </select>
+                            </th>
+                            <th colspan="6"></th>
+                        </tr>
+                        <tr>
+                            <th width="10%">Barcode</th>
+                            <th width="20%">Description</th>
+                            <th width="10%">Category</th>
+                            <th width="10%">Currency</th>
+                            <th width="11%">Cost</th>
+                            <th width="12%">Price</th>
+                            <th width="5%">Qty</th>
+                            <th width="12%">Notes</th>
+                            <th width="10%" colspan="2">Options</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr dir-paginate="data in items | filter:stockSearch:strict | itemsPerPage:itemsPerPage.value"
+                            pagination-id="mainStock">
+                            <td>{{ data.barcode || ' --- ' }}</td>
+                            <td>{{ data.item_description }}</td>
+                            <td>{{ data.category_name }}</td>
+                            <td>{{ data.currency }}</td>
+
+                            <!-- lira -->
+                            <td ng-if="data.currency == 'lira'">{{ data.item_cost.toLocaleString() }} L.L</td>
+                            <!-- sayrafa -->
+                            <td ng-if="data.currency == 'sayrafa'">
+                                {{ sayrafaRound(data.item_cost * sayrafaRate.rate_value).toLocaleString() }} L.L <span
+                                    class="text-danger">({{ data.item_cost.toLocaleString() }}$)</span>
+                            </td>
+                            <!-- dollar -->
+                            <td ng-if="data.currency == 'dollar'">
+                                {{ round(data.item_cost * exchangeRate.rate_value).toLocaleString() }} L.L <span
+                                    class="text-success">({{ data.item_cost.toLocaleString() }}$)</span>
+                            </td>
+
+                            <!-- lira -->
+                            <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
+                            <!-- sayrafa -->
+                            <td ng-if="data.currency == 'sayrafa'">
+                                {{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }} L.L <span
+                                    class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
+                            </td>
+                            <!-- dollar -->
+                            <td ng-if="data.currency == 'dollar'">
+                                {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span
+                                    class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                            </td>
+
+                            <td>{{ data.qty }}</td>
+
+                            <td>{{ data.item_notes || ' --- '}}</td>
+
+                            <td ng-click="openItemsModal('edit', data)" class="info-hover text-info"><i
+                                    class="fas fa-edit"></i>
+                            </td>
+                            <td ng-click="deleteItem(data)" class="danger-hover text-danger"><i
+                                    class="fas fa-trash-alt"></i>
+                            </td>
+                        </tr>
+
+                        <tr ng-if="items.length == 0" class="table-active">
+                            <td colspan="9">There are no data available yet!</td>
+                        </tr>
+
+                        <tr ng-if="(items | filter: stockSearch).length == 0 && stockSearch">
+                            <td colspan="9">No matching records found!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- &&&&&&&&&&&&&&&&&&&&&&&&&& Categories Tab &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+    <div class="row mt-3" ng-show="selectedTab == 'categories'">
         <div class="col-5">
             <div class="card">
                 <div class="card-header">
-                    <button class="btn btn-success btn-sm float-start" ng-click="opencategoryModal('Add')"><i class="fas fa-plus"></i>
+                    <button class="btn btn-success btn-sm float-start" ng-click="opencategoryModal('Add')"><i
+                            class="fas fa-plus"></i>
                         Add Category</button>
                     <h5 class="mb-0 text-center">Categories</h5>
                 </div>
@@ -68,14 +225,18 @@
                                 pagination-id="itemsTable">
                                 <td>{{ data.barcode || ' --- ' }}</td>
                                 <td>{{ data.item_description }}</td>
-                                
+
                                 <!-- lira -->
                                 <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
                                 <!-- sayrafa -->
-                                <td ng-if="data.currency == 'sayrafa'">{{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }} L.L <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
+                                <td ng-if="data.currency == 'sayrafa'">
+                                    {{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }} L.L
+                                    <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
                                 </td>
                                 <!-- dollar -->
-                                <td ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                <td ng-if="data.currency == 'dollar'">
+                                    {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span
+                                        class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
                                 </td>
 
                                 <td width="10%" ng-click="openItemsModal('edit', data)" class="info-hover text-info"><i
@@ -200,17 +361,20 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="currencyOption" id="sayrafaOption"
                                     ng-model="itemsModal.currency" value="sayrafa" required>
-                                <label class="form-check-label text-danger" for="sayrafaOption"><strong>Sayrafa</strong></label>
+                                <label class="form-check-label text-danger"
+                                    for="sayrafaOption"><strong>Sayrafa</strong></label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="currencyOption" id="liraOption"
                                     ng-model="itemsModal.currency" value="lira" required>
-                                <label class="form-check-label text-dark" for="liraOption"><strong>Lira L.L</strong></label>
+                                <label class="form-check-label text-dark" for="liraOption"><strong>Lira
+                                        L.L</strong></label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="currencyOption" id="dollarOption"
                                     ng-model="itemsModal.currency" value="dollar" required>
-                                <label class="form-check-label text-success" for="dollarOption"><strong>Fresh $</strong></label>
+                                <label class="form-check-label text-success" for="dollarOption"><strong>Fresh
+                                        $</strong></label>
                             </div>
                         </div>
 
@@ -223,9 +387,12 @@
                         <div class="col-6 mt-3">
                             <label>Cost</label>
                             <div class="input-group mb-3">
-                                <span ng-if="itemsModal.currency == 'sayrafa'" class="input-group-text text-danger"><strong>$</strong></span>
-                                <span ng-if="itemsModal.currency == 'dollar'" class="input-group-text text-success"><strong>$$</strong></span>
-                                <span ng-if="itemsModal.currency == 'lira'" class="input-group-text text-dark"><strong>L.L</strong></span>
+                                <span ng-if="itemsModal.currency == 'sayrafa'"
+                                    class="input-group-text text-danger"><strong>$</strong></span>
+                                <span ng-if="itemsModal.currency == 'dollar'"
+                                    class="input-group-text text-success"><strong>$$</strong></span>
+                                <span ng-if="itemsModal.currency == 'lira'"
+                                    class="input-group-text text-dark"><strong>L.L</strong></span>
                                 <input type="number" step="0.01" class="form-control" ng-model="itemsModal.item_cost">
                             </div>
                         </div>
@@ -233,9 +400,12 @@
                         <div class="col-6 mt-3">
                             <label>Item Price:</label>
                             <div class="input-group">
-                                <span ng-if="itemsModal.currency == 'sayrafa'" class="input-group-text text-danger"><strong>$</strong></span>
-                                <span ng-if="itemsModal.currency == 'dollar'" class="input-group-text text-success"><strong>$$</strong></span>
-                                <span ng-if="itemsModal.currency == 'lira'" class="input-group-text text-dark"><strong>L.L</strong></span>
+                                <span ng-if="itemsModal.currency == 'sayrafa'"
+                                    class="input-group-text text-danger"><strong>$</strong></span>
+                                <span ng-if="itemsModal.currency == 'dollar'"
+                                    class="input-group-text text-success"><strong>$$</strong></span>
+                                <span ng-if="itemsModal.currency == 'lira'"
+                                    class="input-group-text text-dark"><strong>L.L</strong></span>
                                 <input type="number" step="0.01" class="form-control" ng-model="itemsModal.item_price"
                                     required>
                             </div>

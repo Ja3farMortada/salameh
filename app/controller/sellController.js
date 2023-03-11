@@ -212,6 +212,18 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         let foundInItems = false;
         $scope.items.forEach(element => {
             if (element.item_description == $scope.inputName) {
+                switch (element.currency) {
+                    case 'sayrafa':
+                        unitPrice = $scope.sayrafaRound(element.item_price * $scope.sayrafaRate.rate_value)
+                        break;
+                    case 'dollar':
+                        unitPrice = $scope.round(element.item_price * $scope.exchangeRate.rate_value);
+                        break;
+                    case 'lira':
+                        unitPrice = element.item_price;
+                        break;
+
+                }
                 itemToAdd = {
                     item_ID: element.item_ID,
                     barcode: element.barcode,
@@ -220,7 +232,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                     exchange_rate: $scope.exchangeRate.rate_value,
                     sayrafa_rate: $scope.sayrafaRate.rate_value,
                     unit_cost: element.item_cost,
-                    unit_price: element.item_price,
+                    unit_price: unitPrice,
+                    original_price: element.item_price,
                     qty: 1
                 }
                 let found = false;

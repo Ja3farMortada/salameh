@@ -9,15 +9,22 @@ app.factory('stockFactory', function ($http, NotificationService) {
     model.items = new BehaviorSubject([]);
     model.searchVal = new BehaviorSubject({
         category_ID_FK: null
-    })
+    });
 
     model.selectedCategory = new BehaviorSubject({
         // category_name: null
-    })
+    });
 
-    model.itemsPerPage = {
-        value: 15
-    };
+    model.selectedTab = 'stock';
+    model.setTab = tab => {
+        model.selectedTab = tab;
+    }
+
+    model.itemsPerPage = new BehaviorSubject({
+        name: '10',
+        value: 10
+    });
+
     model.options = [];
     // items per page
     model.setItemsPerPage = () => {
