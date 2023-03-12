@@ -276,6 +276,16 @@
                         <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
                         </option>
                     </select>
+
+                    
+                    <!-- send whatsapp option -->
+                    <div class="mt-3 d-flex justify-content-center">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="sendMessage"
+                                ng-model="sendMessage" value="sendMessage">
+                            <label class="form-check-label" for="sendMessage">Send Invoice on Whatsapp ?</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>

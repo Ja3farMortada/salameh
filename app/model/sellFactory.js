@@ -75,7 +75,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
     }
 
     // checkout with debt
-    model.checkoutDebt = (id, data) => {
+    model.checkoutDebt = (id, data, msg) => {
         let invoice = {
             user_ID_FK: model.loggedInUser.user_ID,
             customer_ID_FK: id,
@@ -94,17 +94,17 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer);
             // fetch customers to update debts
             await customersFactory.fetchCustomers();
-            let index = customersFactory.customers.findIndex(x => x.customer_ID == id);
-            // console.log(customersFactory.customers[index]);
-            let customer = customersFactory.customers[index]
-            let nl = `%0A`;
-            let itemsText = ``;
-            data.forEach(element => {
-                itemsText += `- ${element.qty} * ${element.item_description} of total ${(element.qty * element.original_price).toLocaleString()}${element.currency == 'lira' ? 'L.L' : '$'} ${element.currency == 'sayrafa' ? 'on Sayrafa Rate' : ''} ${nl}`
-            });
-            let text = `New Invoice %23:${response.data}${nl}${itemsText}Your latest balance is:${nl}- Fresh USD: ${customer.dollar_debt.toLocaleString()}$${nl}- Sayrafa: ${customer.sayrafa_debt.toLocaleString()}$${nl}- LBP: ${customer.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`;
-            window.electron.send('send-whatsapp', [customer.customer_phone, text]);
-            return text;
+            if (msg) {
+                let index = customersFactory.customers.findIndex(x => x.customer_ID == id);
+                let customer = customersFactory.customers[index]
+                let nl = `%0A`;
+                let itemsText = ``;
+                data.forEach(element => {
+                    itemsText += `- ${element.qty} * ${element.item_description} of total ${(element.qty * element.original_price).toLocaleString()}${element.currency == 'lira' ? 'L.L' : '$'} ${element.currency == 'sayrafa' ? 'on Sayrafa Rate' : ''} ${nl}`
+                });
+                let text = `New Invoice %23:${response.data}${nl}${itemsText}Your latest balance is:${nl}- Fresh USD: ${customer.dollar_debt.toLocaleString()}$${nl}- Sayrafa: ${customer.sayrafa_debt.toLocaleString()}$${nl}- LBP: ${customer.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`;
+                window.electron.send('send-whatsapp', [customer.customer_phone, text]);
+            }
         }, error => {
             NotificationService.showError(error);
         })

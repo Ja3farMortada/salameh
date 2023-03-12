@@ -367,6 +367,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     $scope.openCustomerModal = type => {
         customerModalType = type;
         $scope.selectedCustomer = null;
+        $scope.sendMessage = true;
         if ($scope.invoice.length > 0) {
             customersModal.show();
             $('#customerModal').on('shown.bs.modal', () => {
@@ -387,7 +388,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                 if (res.isConfirmed) {
                     if (customerModalType == 'debt') {
                         // checkout invoice as debt if customer was selected
-                        let text = await sellFactory.checkoutDebt($scope.selectedCustomer, $scope.invoice);
+                        await sellFactory.checkoutDebt($scope.selectedCustomer, $scope.invoice, $scope.sendMessage);
                         customersModal.hide();
                         if ($scope.selectedTab) {
                             $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
@@ -395,9 +396,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                         }
                         $scope.$digest(sellFactory.clearInvoice());
                         $scope.triggerFocus();
-
-                        // send invoice as whatsapp message
-                        // window.electron.send('send-whatsapp', [text]);
 
                     } else if (customerModalType == 'normal') {
                         // checkout invoice as normal but assign to a customer for reference only
